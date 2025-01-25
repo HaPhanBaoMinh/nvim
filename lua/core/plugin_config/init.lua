@@ -11,4 +11,5 @@ require("core.plugin_config.swagger-preview")
 require("core.plugin_config.nvimtree_config")
 require("core.plugin_config.nvim-web-devicons")
 require("core.plugin_config.copilot")
-
+require("core.plugin_config.null-ls")
+require("core.plugin_config.mason")
