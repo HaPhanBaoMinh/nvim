@@ -11,13 +11,13 @@ end, { noremap = true, silent = true })
 vim.keymap.set(
 	"i",
 	"<C-s>",
-	"<Esc>:w<CR>:lua vim.lsp.buf.format({ async = true })<CR>i",
+	"<Esc>:w<CR>:lua vim.lsp.buf.format({ async = true })<CR><Esc>",
 	{ noremap = true, silent = true }
 )
 vim.keymap.set(
 	"v",
 	"<C-s>",
-	"<Esc>:w<CR>:lua vim.lsp.buf.format({ async = true })<CR>gv",
+	"<Esc>:w<CR>:lua vim.lsp.buf.format({ async = true })<CR><Esc>",
 	{ noremap = true, silent = true }
 )
 
