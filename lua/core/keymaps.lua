@@ -12,12 +12,6 @@ vim.keymap.set("i", "<A-k>", "<Esc>:m .-2<CR>==gi", { noremap = true, silent = t
 vim.keymap.set("i", "<A-j>", "<Esc>:m .+1<CR>==gi", { noremap = true, silent = true })
 vim.keymap.set("v", "<A-j>", ":m '>+1<CR>gv=gv", { noremap = true, silent = true })
 
--- Move to nearest { or }
-vim.keymap.set("n", "[[", ":silent! lua vim.fn.search('{', 'b')<CR>w99[{", { noremap = true, silent = true })
-vim.keymap.set("n", "][", ":silent! lua vim.fn.search('}')<CR>b99]}", { noremap = true, silent = true })
-vim.keymap.set("n", "]]", ":silent! lua vim.fn.search('{')<CR>", { noremap = true, silent = true })
-vim.keymap.set("n", "[]", ":silent! lua vim.fn.search('}', 'b')<CR>", { noremap = true, silent = true })
-
 vim.keymap.set("n", "<C-s>", function()
   vim.cmd("w")                        -- Lưu file
   vim.lsp.buf.format({ async = true }) -- Format code

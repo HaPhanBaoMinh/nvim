@@ -25,6 +25,11 @@ require("lazy").setup({
   "github/copilot.vim",
   "williamboman/mason.nvim",
   "chentoast/marks.nvim",
+  {
+    "nvim-treesitter/nvim-treesitter-textobjects",
+    after = "nvim-treesitter",
+    requires = "nvim-treesitter/nvim-treesitter",
+  },
   "williamboman/mason-lspconfig.nvim",
   "neovim/nvim-lspconfig",
   "nvimtools/none-ls.nvim",
