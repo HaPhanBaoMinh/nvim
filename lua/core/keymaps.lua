@@ -4,6 +4,9 @@ vim.keymap.set("n", "<c-j>", ":wincmd j<CR>")
 vim.keymap.set("n", "<c-h>", ":wincmd h<CR>")
 vim.keymap.set("n", "<c-l>", ":wincmd l<CR>")
 
+vim.api.nvim_set_keymap("v", "<Tab>", ">gv", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("v", "<S-Tab>", "<gv", { noremap = true, silent = true })
+
 -- Move lines up and down
 vim.keymap.set("n", "<A-j>", ":m .+1<CR>==", { noremap = true, silent = true })
 vim.keymap.set("n", "<A-k>", ":m .-2<CR>==", { noremap = true, silent = true })
