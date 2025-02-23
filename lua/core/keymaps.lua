@@ -15,6 +15,11 @@ vim.keymap.set("i", "<A-k>", "<Esc>:m .-2<CR>==gi", { noremap = true, silent = t
 vim.keymap.set("i", "<A-j>", "<Esc>:m .+1<CR>==gi", { noremap = true, silent = true })
 vim.keymap.set("v", "<A-j>", ":m '>+1<CR>gv=gv", { noremap = true, silent = true })
 
+vim.keymap.set("n", "<C-S-Left>", "<cmd>vertical resize -5<CR>")
+vim.keymap.set("n", "<C-S-Right>", "<cmd>vertical resize +5<CR>")
+vim.keymap.set("n", "<C-S-Up>", "<cmd>resize +2<CR>")
+vim.keymap.set("n", "<C-S-Down>", "<cmd>resize -2<CR>")
+
 vim.keymap.set("n", "<C-s>", function()
   vim.cmd("w")                        -- Lưu file
   vim.lsp.buf.format({ async = true }) -- Format code
