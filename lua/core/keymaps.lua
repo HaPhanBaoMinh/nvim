@@ -15,6 +15,10 @@ vim.keymap.set("i", "<A-k>", "<Esc>:m .-2<CR>==gi", { noremap = true, silent = t
 vim.keymap.set("i", "<A-j>", "<Esc>:m .+1<CR>==gi", { noremap = true, silent = true })
 vim.keymap.set("v", "<A-j>", ":m '>+1<CR>gv=gv", { noremap = true, silent = true })
 
+-- Split windows
+vim.keymap.set("n", '<C-w>"', "<cmd>vsplit<CR>")
+vim.keymap.set("n", "<C-w>%", "<cmd>split<CR>")
+
 vim.keymap.set("n", "<C-S-Left>", "<cmd>vertical resize -5<CR>")
 vim.keymap.set("n", "<C-S-Right>", "<cmd>vertical resize +5<CR>")
 vim.keymap.set("n", "<C-S-Up>", "<cmd>resize +2<CR>")
@@ -40,10 +44,6 @@ vim.keymap.set(
 vim.keymap.set("n", "<C-a>", "ggVG", { noremap = true, silent = true })
 vim.keymap.set("v", "<C-a>", "ggVG", { noremap = true, silent = true })
 
-vim.api.nvim_set_keymap("n", "<C-c>", '"+yy', { noremap = true, silent = true })
-vim.api.nvim_set_keymap("v", "<C-c>", '"+y', { noremap = true, silent = true })
-vim.api.nvim_set_keymap("n", "<C-v>", '"+p', { noremap = true, silent = true })
-
 vim.keymap.set("n", "<leader>h", ":nohlsearch<CR>")
 
 vim.keymap.set("n", "<F2>", function()
@@ -54,3 +54,24 @@ vim.keymap.set("n", "<F2>", function()
     vim.wo.relativenumber = true
   end
 end, { desc = "Toggle relative line numbers" })
+
+vim.keymap.set("n", "s", function()
+  require("flash").jump()
+end, { desc = "Flash Jump" })
+
+vim.keymap.set("n", "S", function()
+  require("flash").treesitter()
+end, { desc = "Flash Treesitter Jump" })
+
+vim.keymap.set("o", "r", function()
+  require("flash").remote()
+end, { desc = "Remote Flash Jump" })
+
+vim.keymap.set({ "x", "o" }, "R", function()
+  require("flash").treesitter_search()
+end, { desc = "Remote Flash Jump" })
+
+vim.keymap.set("v", "<C-c>", "y", { noremap = true, silent = true })
+vim.keymap.set("n", "<C-v>", "p", { noremap = true, silent = true })
+vim.keymap.set("i", "<C-c>", "y", { noremap = true, silent = true })
+
