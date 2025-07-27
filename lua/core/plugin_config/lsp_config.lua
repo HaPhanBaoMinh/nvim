@@ -1,5 +1,5 @@
 require("mason-lspconfig").setup({
-  ensure_installed = { "lua_ls", "tailwindcss", "gopls", "terraformls" },
+  ensure_installed = { "gopls", "terraformls" },
 })
 local lspconfig = require("lspconfig")
 local lsp_defaults = lspconfig.util.default_config
@@ -7,16 +7,12 @@ lsp_defaults.capabilities =
     vim.tbl_deep_extend("force", lsp_defaults.capabilities, require("cmp_nvim_lsp").default_capabilities())
 -- Cấu hình diagnostics
 vim.diagnostic.config({
-  virtual_text = {
-    prefix = "●", -- Thay đổi ký hiệu lỗi
-    spacing = 4,
-  },
-  signs = true,         -- Hiện icon lỗi bên lề
-  float = {
-    border = "rounded", -- Hiển thị lỗi chi tiết trong popup
-    source = "always",
-  },
-  severity_sort = true, -- Sắp xếp lỗi theo độ nghiêm trọng
+  -- virtual_text = {
+  --   prefix = "●",
+  --   spacing = 4,
+  -- },
+  signs = true,
+  severity_sort = true,
 })
 -- Tự động hiển thị lỗi khi di chuột
 vim.o.updatetime = 250
@@ -49,7 +45,6 @@ require("lspconfig").gopls.setup({
     debounce_text_changes = 150,
   },
 })
-require("lspconfig").tailwindcss.setup({})
 require("lspconfig").terraformls.setup({})
 require("lspconfig").yamlls.setup({})
 
