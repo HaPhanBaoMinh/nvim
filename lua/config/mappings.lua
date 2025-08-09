@@ -80,15 +80,27 @@ map("n", "]c", ":lua require('decisive').align_csv_next_col()<cr>")
 map("n", "<C-a>", "ggVG")
 map("v", "<C-c>", '"+y')   -- copy selection to system clipboard
 map("n", "<C-c>", '"+yy')  -- copy current line in normal mode (optional)
--- Ctrl+S in insert mode → save and go to normal mode
 map("i", "<C-s>", "<Esc>:w<CR>")
-
--- Ctrl+S in visual mode → save and go to normal mode
 map("v", "<C-s>", "<Esc>:w<CR>")
-
--- Ctrl+S in normal mode → just save
 map("n", "<C-s>", ":w<CR>")
 
+-- Flash.nvim mappings
+map({ "n", "x", "o" }, "f", function()
+  require("flash").jump()
+end)
+
+map({ "n", "x", "o" }, "F", function()
+  require("flash").treesitter()
+end)
+
+map({ "n", "x", "o" }, "<leader>fr", function()
+  require("flash").jump({
+    remote_op = {
+      restore = true,
+      motion = true,
+    },
+  })
+end)
 
 map("n", "<leader>H", function() --toggle htop in term
     _G.htop:toggle()
