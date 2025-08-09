@@ -77,8 +77,17 @@ map("n", "[c", ":lua require('decisive').align_csv_prev_col()<cr>")
 map("n", "]c", ":lua require('decisive').align_csv_next_col()<cr>")
 
 -- Lazy config
-map("n", "<C-c>", '"+yy')
 map("n", "<C-a>", "ggVG")
+map("v", "<C-c>", '"+y')   -- copy selection to system clipboard
+map("n", "<C-c>", '"+yy')  -- copy current line in normal mode (optional)
+-- Ctrl+S in insert mode → save and go to normal mode
+map("i", "<C-s>", "<Esc>:w<CR>")
+
+-- Ctrl+S in visual mode → save and go to normal mode
+map("v", "<C-s>", "<Esc>:w<CR>")
+
+-- Ctrl+S in normal mode → just save
+map("n", "<C-s>", ":w<CR>")
 
 
 map("n", "<leader>H", function() --toggle htop in term
