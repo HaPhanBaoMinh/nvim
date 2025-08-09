@@ -78,7 +78,7 @@ map("n", "]c", ":lua require('decisive').align_csv_next_col()<cr>")
 
 -- Lazy config
 map("n", "<C-c>", '"+yy')
-map("n", "<C-a>", "ggVG"
+map("n", "<C-a>", "ggVG")
 
 
 map("n", "<leader>H", function() --toggle htop in term
