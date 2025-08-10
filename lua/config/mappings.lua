@@ -80,9 +80,9 @@ map("n", "]c", ":lua require('decisive').align_csv_next_col()<cr>")
 map("n", "<C-a>", "ggVG")
 map("v", "<C-c>", '"+y')   -- copy selection to system clipboard
 map("n", "<C-c>", '"+yy')  -- copy current line in normal mode (optional)
-map("i", "<C-s>", "<Esc>:w<CR>")
-map("v", "<C-s>", "<Esc>:w<CR>")
-map("n", "<C-s>", ":w<CR>")
+map("i", "<C-s>", "<Esc>:w!<CR>")
+map("v", "<C-s>", "<Esc>:w!<CR>")
+map("n", "<C-s>", ":w!<CR>")
 
 map("n", "<leader>H", function() --toggle htop in term
     _G.htop:toggle()

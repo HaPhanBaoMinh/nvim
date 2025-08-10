@@ -41,6 +41,9 @@ Plug('emmanueltouzery/decisive.nvim') --view csv files
 Plug('folke/twilight.nvim') --surrounding dim
 Plug('folke/flash.nvim', { ['branch'] = 'main' }) --flash search
 Plug('nvim-lua/plenary.nvim') --required by many plugins
+Plug('mason-org/mason.nvim') --package manager
+Plug('mason-org/mason-lspconfig.nvim') --mason lsp config
+Plug('neovim/nvim-lspconfig') --lsp config
 
 vim.call('plug#end')
 
@@ -78,6 +81,8 @@ require("plugins.nvim-tree")
 require("plugins.treesitter")
 require("plugins.twilight")
 require("plugins.which-key")
+require("plugins.mason")
+require("plugins.lspconfig")
 end, 100)
 
 load_theme()

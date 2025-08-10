@@ -46,3 +46,5 @@ end
 vim.diagnostic.config({
 	signs = false,
 })
+
+vim.o.updatetime = 250
