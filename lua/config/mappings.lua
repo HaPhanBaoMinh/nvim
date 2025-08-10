@@ -85,6 +85,9 @@ map("v", "<C-s>", "<Esc>:w!<CR>")
 map("n", "<C-s>", ":w!<CR>")
 map("n", "<leader>b", "<C-^>")   --toggle last buffer
 
+-- Flash.nvim mappings
+map("n", "s", function() require("flash").jump() end, { desc = "Flash Jump" })
+
 map("n", "<leader>H", function() --toggle htop in term
 	_G.htop:toggle()
 end)
