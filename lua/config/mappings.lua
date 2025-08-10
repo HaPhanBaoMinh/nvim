@@ -14,9 +14,9 @@ map("n", "<S-l>", ":bnext<CR>")
 map("n", "<S-h>", ":bprevious<CR>")
 map("n", "<leader>q", ":BufferClose<CR>")
 map("n", "<leader>Q", ":BufferClose!<CR>")
-map("n", "<leader>U", "::bufdo bd<CR>") --close all
+map("n", "<leader>U", "::bufdo bd<CR>")         --close all
 map('n', '<leader>vs', ':vsplit<CR>:bnext<CR>') --ver split + open next buffer
-map("n", "<leader>cv", "<C-w>c") -- close vertical split
+map("n", "<leader>cv", "<C-w>c")                -- close vertical split
 
 -- buffer position nav + reorder
 map('n', '<AS-h>', '<Cmd>BufferMovePrevious<CR>')
@@ -44,31 +44,31 @@ map("n", "<F7>", ":vertical resize +2<CR>")
 map("n", "<F8>", ":vertical resize -2<CR>")
 
 -- fzf and grep
-map("n", "<leader>f", ":lua require('fzf-lua').files()<CR>") --search cwd
-map("n", "<leader>Fh", ":lua require('fzf-lua').files({ cwd = '~/' })<CR>") --search home
-map("n", "<leader>Fc", ":lua require('fzf-lua').files({ cwd = '~/.config' })<CR>") --search .config
+map("n", "<leader>f", ":lua require('fzf-lua').files()<CR>")                          --search cwd
+map("n", "<leader>Fh", ":lua require('fzf-lua').files({ cwd = '~/' })<CR>")           --search home
+map("n", "<leader>Fc", ":lua require('fzf-lua').files({ cwd = '~/.config' })<CR>")    --search .config
 map("n", "<leader>Fl", ":lua require('fzf-lua').files({ cwd = '~/.local/src' })<CR>") --search .local/src
-map("n", "<leader>Ff", ":lua require('fzf-lua').files({ cwd = '..' })<CR>") --search above
-map("n", "<leader>Fr", ":lua require('fzf-lua').resume()<CR>") --last search
-map("n", "<leader>g", ":lua require('fzf-lua').grep()<CR>") --grep
-map("n", "<leader>G", ":lua require('fzf-lua').grep_cword()<CR>") --grep word under cursor
+map("n", "<leader>Ff", ":lua require('fzf-lua').files({ cwd = '..' })<CR>")           --search above
+map("n", "<leader>Fr", ":lua require('fzf-lua').resume()<CR>")                        --last search
+map("n", "<leader>g", ":lua require('fzf-lua').grep()<CR>")                           --grep
+map("n", "<leader>G", ":lua require('fzf-lua').grep_cword()<CR>")                     --grep word under cursor
 
 -- misc
-map("n", "<leader>s", ":%s//g<Left><Left>") --replace all
-map("n", "<leader>t", ":NvimTreeToggle<CR>") --open file explorer
-map("n", "<leader>p", switch_theme) --cycle themes
-map("n", "<leader>P", ":PlugInstall<CR>") --vim-plug
-map('n', '<leader>z', ":lua require('FTerm').open()<CR>") --open term
+map("n", "<leader>s", ":%s//g<Left><Left>")                           --replace all
+map("n", "<leader>t", ":NvimTreeToggle<CR>")                          --open file explorer
+map("n", "<leader>p", switch_theme)                                   --cycle themes
+map("n", "<leader>P", ":PlugInstall<CR>")                             --vim-plug
+map('n', '<leader>z', ":lua require('FTerm').open()<CR>")             --open term
 map('t', '<Esc>', '<C-\\><C-n><CMD>lua require("FTerm").close()<CR>') --preserves session
-map("n", "<leader>w", ":w<CR>") --write but one less key
-map("n", "<leader>d", ":w ") --duplicate to new name
-map("n", "<leader>x", "<cmd>!chmod +x %<CR>") --make a file executable
-map("n", "<leader>mv", ":!mv % ") --move a file to a new dir
-map("n", "<leader>R", ":so %<CR>") --reload neovim config
-map("n", "<leader>u", ':silent !xdg-open "<cWORD>" &<CR>') --open a url under cursor
-map("v", "<leader>i", "=gv") --auto indent
-map("n", "<leader>W", ":set wrap!<CR>") --toggle wrap
-map("n", "<leader>l", ":Twilight<CR>") --surrounding dim
+map("n", "<leader>w", ":w<CR>")                                       --write but one less key
+map("n", "<leader>d", ":w ")                                          --duplicate to new name
+map("n", "<leader>x", "<cmd>!chmod +x %<CR>")                         --make a file executable
+map("n", "<leader>mv", ":!mv % ")                                     --move a file to a new dir
+map("n", "<leader>R", ":so %<CR>")                                    --reload neovim config
+map("n", "<leader>u", ':silent !xdg-open "<cWORD>" &<CR>')            --open a url under cursor
+map("v", "<leader>i", "=gv")                                          --auto indent
+map("n", "<leader>W", ":set wrap!<CR>")                               --toggle wrap
+map("n", "<leader>l", ":Twilight<CR>")                                --surrounding dim
 
 -- decisive csv
 map("n", "<leader>csa", ":lua require('decisive').align_csv({})<cr>")
@@ -78,14 +78,15 @@ map("n", "]c", ":lua require('decisive').align_csv_next_col()<cr>")
 
 -- Lazy config
 map("n", "<C-a>", "ggVG")
-map("v", "<C-c>", '"+y')   -- copy selection to system clipboard
-map("n", "<C-c>", '"+yy')  -- copy current line in normal mode (optional)
+map("v", "<C-c>", '"+y')  -- copy selection to system clipboard
+map("n", "<C-c>", '"+yy') -- copy current line in normal mode (optional)
 map("i", "<C-s>", "<Esc>:w!<CR>")
 map("v", "<C-s>", "<Esc>:w!<CR>")
 map("n", "<C-s>", ":w!<CR>")
+map("n", "<leader>b", "<C-^>")   --toggle last buffer
 
 map("n", "<leader>H", function() --toggle htop in term
-    _G.htop:toggle()
+	_G.htop:toggle()
 end)
 
 
