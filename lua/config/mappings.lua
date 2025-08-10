@@ -84,24 +84,6 @@ map("i", "<C-s>", "<Esc>:w<CR>")
 map("v", "<C-s>", "<Esc>:w<CR>")
 map("n", "<C-s>", ":w<CR>")
 
--- Flash.nvim mappings
-map({ "n", "x", "o" }, "f", function()
-  require("flash").jump()
-end)
-
-map({ "n", "x", "o" }, "F", function()
-  require("flash").treesitter()
-end)
-
-map({ "n", "x", "o" }, "<leader>fr", function()
-  require("flash").jump({
-    remote_op = {
-      restore = true,
-      motion = true,
-    },
-  })
-end)
-
 map("n", "<leader>H", function() --toggle htop in term
     _G.htop:toggle()
 end)
