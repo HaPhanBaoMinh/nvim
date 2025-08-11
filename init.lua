@@ -72,7 +72,7 @@ require("plugins.nvim-lint")
 -- require("plugins.nvim-tree")
 require("plugins.render-markdown")
 require("plugins.treesitter")
-require("plugins.blink")
+-- require("plugins.blink")
 -- require("plugins.twilight")
 -- require("plugins.which-key")
 
