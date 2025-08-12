@@ -47,9 +47,9 @@ Plug('mason-org/mason.nvim')                             --package manager
 Plug('mason-org/mason-lspconfig.nvim')                   --mason lsp config
 Plug('neovim/nvim-lspconfig')                            --lsp config
 Plug('rafamadriz/friendly-snippets')                     --snippets
-Plug('L3MON4D3/LuaSnip', { "tag': 'v2.*" })              --snippets engine
-Plug('saghen/blink.cmp', { ['tag'] = 'v0.11.2' })        --completion engine
-
+Plug('saghen/blink.cmp')                                 --completion engine
+Plug('L3MON4D3/LuaSnip')
+Plug('rafamadriz/friendly-snippets')
 vim.call('plug#end')
 
 -- move config and plugin config to alternate files
@@ -72,10 +72,9 @@ require("plugins.nvim-lint")
 -- require("plugins.nvim-tree")
 require("plugins.render-markdown")
 require("plugins.treesitter")
--- require("plugins.blink")
+require("plugins.blink")
 -- require("plugins.twilight")
 -- require("plugins.which-key")
-
 vim.defer_fn(function()
 	--defer non-essential configs,
 	--purely for experimental purposes:
@@ -87,7 +86,6 @@ vim.defer_fn(function()
 	require("plugins.treesitter")
 	require("plugins.twilight")
 	require("plugins.which-key")
-	require("plugins.mason")
 	require("plugins.lspconfig")
 end, 100)
 

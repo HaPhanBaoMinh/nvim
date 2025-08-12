@@ -39,11 +39,10 @@ end, { desc = "Toggle diagnostic popup" })
 
 -- capabilities (compatible with blink.cmp or fallback)
 local capabilities = vim.lsp.protocol.make_client_capabilities()
-pcall(function()
-	capabilities = require("blink.cmp").get_lsp_capabilities(capabilities)
-end)
+
 
 local lspconfig = require("lspconfig")
+
 
 -- auto-attach and optional format-on-save
 local format_fts = { lua = true, go = true, typescript = true, typescriptreact = true, javascript = true }
