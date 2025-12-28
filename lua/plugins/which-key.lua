@@ -1,6 +1,7 @@
 local wk = require("which-key")
 wk.add({
-{ "<leader>d", desc = "duplicate file" },
+{ "<leader>dd", desc = "diagnostics popup" },
+{ "<leader>dc", desc = "copy diagnostics" },
 { "<leader>p", desc = "toggle theme" },
 { "<leader>u", desc = "open url" },
 { "<leader>z", desc = "floating terminal" },

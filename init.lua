@@ -22,6 +22,7 @@ vim.call('plug#begin')
 
 Plug('catppuccin/nvim', { ['as'] = 'catppuccin' })       --colorscheme
 Plug('ellisonleao/gruvbox.nvim', { ['as'] = 'gruvbox' }) --colorscheme 2
+Plug('chentoast/marks.nvim')
 Plug('uZer/pywal16.nvim', { ['as'] = 'pywal16' })        --or, pywal colorscheme
 Plug('nvim-lualine/lualine.nvim')                        --statusline
 Plug('nvim-tree/nvim-web-devicons')                      --pretty icons
@@ -63,6 +64,7 @@ require("plugins.alpha")
 require("plugins.barbar")
 require("plugins.colorizer")
 require("plugins.colorscheme")
+require("plugins.marks")
 require("plugins.comment")
 -- require("plugins.fterm")
 -- require("plugins.fzf-lua")
@@ -72,7 +74,8 @@ require("plugins.nvim-lint")
 -- require("plugins.nvim-tree")
 require("plugins.render-markdown")
 require("plugins.treesitter")
-require("plugins.blink")
+-- require("plugins.blink")
+require("plugins.mason")
 -- require("plugins.twilight")
 -- require("plugins.which-key")
 vim.defer_fn(function()
