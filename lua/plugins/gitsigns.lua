@@ -21,7 +21,8 @@ require('gitsigns').setup {
   linehl     = false, -- Toggle with `:Gitsigns toggle_linehl`
   word_diff  = false, -- Toggle with `:Gitsigns toggle_word_diff`
   watch_gitdir = {
-    follow_files = true
+    follow_files = true,
+    interval = 1000,  -- Poll less often to reduce RAM/CPU
   },
   auto_attach = true,
   attach_to_untracked = false,

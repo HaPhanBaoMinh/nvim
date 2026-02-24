@@ -1,111 +1,120 @@
--- =========================
--- Diagnostics UI
--- =========================
+-- lspconfig.lua (clean + practical for Go / JS / TS)
+local lspconfig = require("lspconfig")
+local blink = require("blink.cmp")
+
+-- Diagnostics: readable by default, not noisy. update_in_insert=false saves RAM.
 vim.diagnostic.config({
-	virtual_text = true,
-	signs = false,
-	underline = true,
-	update_in_insert = false,
-	severity_sort = true,
-	float = false, -- disable auto floats
+  virtual_text = true,
+  signs = true,
+  underline = true,
+  update_in_insert = false,
+  severity_sort = true,
+  float = { border = "rounded", source = "if_many" },
 })
 
-vim.o.updatetime = 250
+-- Hover/signature UI
+local float_opts = { border = "rounded" }
+vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, float_opts)
+vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, float_opts)
 
-local diag_winid
+-- Capabilities for completion
+local capabilities = blink.get_lsp_capabilities()
 
-local function toggle_diag_float()
-	if diag_winid and not vim.api.nvim_win_is_valid(diag_winid) then
-		diag_winid = nil
-	end
-	if diag_winid then
-		vim.api.nvim_win_close(diag_winid, true)
-		diag_winid = nil
-		return
-	end
-	local _, win = vim.diagnostic.open_float(0, {
-		scope = "cursor",
-		focusable = false,
-		border = "rounded",
-		close_events = { "CursorMoved", "BufHidden", "InsertEnter" },
-		reuse_win = true,
-	})
-	diag_winid = win
+-- One on_attach to rule them all
+local function on_attach(_, bufnr)
+  local map = function(mode, lhs, rhs, desc)
+    vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, silent = true, desc = desc })
+  end
+
+  map("n", "gd", vim.lsp.buf.definition, "LSP: Go to definition")
+  map("n", "gD", vim.lsp.buf.declaration, "LSP: Go to declaration")
+  map("n", "gr", vim.lsp.buf.references, "LSP: References")
+  map("n", "gi", vim.lsp.buf.implementation, "LSP: Implementation")
+  map("n", "K", vim.lsp.buf.hover, "LSP: Hover")
+  map("n", "<leader>rn", vim.lsp.buf.rename, "LSP: Rename")
+  map("n", "<leader>ca", vim.lsp.buf.code_action, "LSP: Code action")
+  map("n", "[d", vim.diagnostic.goto_prev, "Diag: Prev")
+  map("n", "]d", vim.diagnostic.goto_next, "Diag: Next")
+  map("n", "<leader>e", vim.diagnostic.open_float, "Diag: Float")
 end
 
-vim.keymap.set("n", "<leader>dd", toggle_diag_float, { desc = "Diagnostics: toggle popup" })
-
--- copy diagnostics
-vim.keymap.set("n", "<leader>dc", function()
-	local text
-	if diag_winid and vim.api.nvim_win_is_valid(diag_winid) then
-		local buf = vim.api.nvim_win_get_buf(diag_winid)
-		text = table.concat(vim.api.nvim_buf_get_lines(buf, 0, -1, false), "\n")
-	else
-		local lnum = vim.api.nvim_win_get_cursor(0)[1] - 1
-		local diags = vim.diagnostic.get(0, { lnum = lnum })
-		if vim.tbl_isempty(diags) then
-			vim.notify("No diagnostics here", vim.log.levels.INFO)
-			return
-		end
-		text = table.concat(vim.tbl_map(function(d) return d.message end, diags), "\n")
-	end
-	vim.fn.setreg("+", text)
-	pcall(vim.fn.setreg, "*", text)
-	vim.notify("Diagnostics copied", vim.log.levels.INFO)
-end, { desc = "Diagnostics: copy" })
-
--- =========================
--- LSP setup
--- =========================
-local lspconfig = require("lspconfig")
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-pcall(function()
-	capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
-end)
-
-local format_fts = { lua = true, go = true, typescript = true, typescriptreact = true, javascript = true }
-
-vim.api.nvim_create_autocmd("LspAttach", {
-	callback = function(ev)
-		local bufnr = ev.buf
-		local client = vim.lsp.get_client_by_id(ev.data.client_id)
-		if not client then return end
-
-		-- buffer-local mappings
-		vim.keymap.set("n", "gd", vim.lsp.buf.definition, { buffer = bufnr, desc = "LSP: Go to definition" })
-		vim.keymap.set("n", "gr", vim.lsp.buf.references, { buffer = bufnr, desc = "LSP: References" })
-
-		-- format on save
-		local ft = vim.bo[bufnr].filetype
-		if format_fts[ft] and client.server_capabilities.documentFormattingProvider then
-			vim.api.nvim_create_autocmd("BufWritePre", {
-				buffer = bufnr,
-				once = true,
-				callback = function()
-					vim.lsp.buf.format({ bufnr = bufnr, id = client.id })
-				end,
-			})
-		end
-
-		-- hover (Shift+K)
-		vim.keymap.set("n", "K", vim.lsp.buf.hover, { buffer = bufnr, desc = "LSP: Hover" })
-	end,
-})
-
--- =========================
--- Servers
--- =========================
-local servers = {
-	lua_ls = { settings = { Lua = { diagnostics = { globals = { "vim" } } } } },
-	ts_ls = { settings = { implicitProjectConfiguration = { checkJs = true }, javascript = { suggest = { autoImports = true } }, typescript = { suggest = { autoImports = true } } } },
-	pyright = {},
-	jsonls = {},
-	bashls = {},
-	gopls = {},
+-- Format on save for the filetypes you care about
+-- Note: For JS/TS, many teams prefer prettier/eslint instead of tsserver formatting.
+local format_on_save = {
+  go = true,
+  -- javascript = true,
+  -- typescript = true,
+  -- typescriptreact = true,
 }
 
+vim.api.nvim_create_autocmd("LspAttach", {
+  group = vim.api.nvim_create_augroup("UserLspConfig", { clear = true }),
+  callback = function(ev)
+    local client = vim.lsp.get_client_by_id(ev.data.client_id)
+    local bufnr = ev.buf
+
+    -- Attach keymaps
+    on_attach(client, bufnr)
+
+    -- Optional: auto-format on save (only if server supports it)
+    local ft = vim.bo[bufnr].filetype
+    if format_on_save[ft] and client.server_capabilities.documentFormattingProvider then
+      vim.api.nvim_create_autocmd("BufWritePre", {
+        buffer = bufnr,
+        callback = function()
+          vim.lsp.buf.format({
+            bufnr = bufnr,
+            timeout_ms = 3000,
+            filter = function(c)
+              -- Prefer gopls for Go formatting
+              if ft == "go" then return c.name == "gopls" end
+              return true
+            end,
+          })
+        end,
+      })
+    end
+  end,
+})
+
+-- Servers: keep the set tight (Go + TS/JS + JSON; Lua optional)
+local servers = {
+  gopls = {
+    settings = {
+      gopls = {
+        gofumpt = true,
+        usePlaceholders = true,
+        analyses = { unusedparams = true, nilness = true, unusedwrite = true },
+        staticcheck = true,
+      },
+    },
+  },
+
+  -- TypeScript/JavaScript (nvim-lspconfig name: tsserver)
+  ts_ls = {
+    settings = {
+      typescript = { format = { indentSize = 2, convertTabsToSpaces = true } },
+      javascript = { format = { indentSize = 2, convertTabsToSpaces = true } },
+    },
+  },
+
+  jsonls = {},
+
+  -- Optional (remove if you don't edit Lua configs)
+  lua_ls = {
+    settings = {
+      Lua = {
+        diagnostics = { globals = { "vim" } },
+        workspace = { checkThirdParty = false },
+        telemetry = { enable = false },
+      },
+    },
+  },
+}
+
+-- Setup (idempotent, no global flags needed if you only source once)
 for name, opts in pairs(servers) do
-	opts.capabilities = capabilities
-	lspconfig[name].setup(opts)
+  opts.capabilities = capabilities
+  opts.on_attach = function(client, bufnr) on_attach(client, bufnr) end
+  lspconfig[name].setup(opts)
 end

@@ -1,4 +1,5 @@
-require("colorizer").setup({ "*" }, {
+-- Only enable for filetypes with colors. "*" runs on every file = heavy RAM.
+require("colorizer").setup({ "css", "scss", "html", "javascript", "typescript", "tsx", "json", "lua" }, {
 	RGB = true, -- #RGB hex codes
 	RRGGBB = true, -- #RRGGBB hex codes
 	names = false, -- "Name" codes like Blue
