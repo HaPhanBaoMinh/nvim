@@ -12,7 +12,10 @@ cmp.setup({
 	mapping = cmp.mapping.preset.insert({
 		["<C-b>"] = cmp.mapping.scroll_docs(-4),
 		["<C-f>"] = cmp.mapping.scroll_docs(4),
+		-- GNOME Terminal (VTE) often maps Ctrl+Space to NUL (^@), not <C-Space>
 		["<C-Space>"] = cmp.mapping.complete(),
+		["<C-@>"] = cmp.mapping.complete(),
+		["<C-.>"] = cmp.mapping.complete(), -- fallback if IME/OS steals Ctrl+Space
 		["<C-e>"] = cmp.mapping.abort(),
 		["<CR>"] = cmp.mapping.confirm({ select = true }),
 		["<Tab>"] = cmp.mapping(function(fallback)
