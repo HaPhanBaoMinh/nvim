@@ -14,7 +14,7 @@ map("n", "<S-l>", ":bnext<CR>")
 map("n", "<S-h>", ":bprevious<CR>")
 map("n", "<leader>q", ":BufferClose<CR>")
 map("n", "<leader>Q", ":BufferClose!<CR>")
-map("n", "<leader>U", "::bufdo bd<CR>") --close all
+map("n", "<leader>U", ":bufdo bd<CR>") --close all buffers
 map('n', '<leader>vs', ':vsplit<CR>:bnext<CR>') --ver split + open next buffer
 
 -- buffer position nav + reorder
@@ -51,6 +51,14 @@ map("n", "<leader>Ff", ":lua require('fzf-lua').files({ cwd = '..' })<CR>") --se
 map("n", "<leader>Fr", ":lua require('fzf-lua').resume()<CR>") --last search
 map("n", "<leader>g", ":lua require('fzf-lua').grep()<CR>") --grep
 map("n", "<leader>G", ":lua require('fzf-lua').grep_cword()<CR>") --grep word under cursor
+
+-- quick nav
+map("n", "<leader><Space>", "<C-o>")
+
+-- gui-style shortcuts
+map("n", "<C-a>", "ggVG")
+map("v", "<C-c>", '"+y')
+map("n", "<C-s>", ":wq<CR>")
 
 -- misc
 map("n", "<leader>s", ":%s//g<Left><Left>") --replace all

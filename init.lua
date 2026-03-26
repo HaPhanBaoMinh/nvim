@@ -30,7 +30,7 @@ Plug('nvim-treesitter/nvim-treesitter') --improved syntax
 Plug('mfussenegger/nvim-lint') --async linter
 Plug('nvim-tree/nvim-tree.lua') --file explorer
 Plug('windwp/nvim-autopairs') --autopairs 
-Plug('lewis6991/gitsigns.nvim') --git
+Plug('lewis6991/gitsigns.nvim', { ['tag'] = 'v0.9.0' }) --git (v0.9.0: last version supporting nvim 0.9)
 Plug('numToStr/Comment.nvim') --easier comments
 Plug('norcalli/nvim-colorizer.lua') --color highlight
 Plug('ibhagwan/fzf-lua') --fuzzy finder and grep
@@ -65,17 +65,19 @@ require("plugins.render-markdown")
 -- require("plugins.twilight")
 -- require("plugins.which-key")
 
-vim.defer_fn(function() 
-		--defer non-essential configs,
-		--purely for experimental purposes:
-		--this only makes a difference of +-10ms on initial startup
-require("plugins.autopairs")
-require("plugins.fterm")
-require("plugins.fzf-lua")
-require("plugins.nvim-tree")
-require("plugins.treesitter")
-require("plugins.twilight")
-require("plugins.which-key")
+-- defer heavy plugin setup so the first frame paints sooner (profile: nvim --startuptime /tmp/nvim.log +q)
+vim.defer_fn(function()
+	for _, mod in ipairs({
+		"plugins.autopairs",
+		"plugins.fterm",
+		"plugins.fzf-lua",
+		"plugins.nvim-tree",
+		"plugins.treesitter",
+		"plugins.twilight",
+		"plugins.which-key",
+	}) do
+		require(mod)
+	end
 end, 100)
 
 load_theme()
