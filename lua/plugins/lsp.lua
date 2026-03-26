@@ -72,6 +72,18 @@ require("mason-lspconfig").setup_handlers({
 			},
 		})
 	end,
+	-- ~/.cargo/bin/rust-analyzer is often a rustup proxy; without `rustup component add rust-analyzer`
+	-- it exits 1 ("Unknown binary ... in official toolchain"). Prefer Mason's binary only.
+	["rust_analyzer"] = function()
+		local mason_ra = vim.fn.stdpath("data") .. "/mason/bin/rust-analyzer"
+		if vim.fn.executable(mason_ra) ~= 1 then
+			return
+		end
+		require("lspconfig").rust_analyzer.setup({
+			capabilities = capabilities,
+			cmd = { mason_ra },
+		})
+	end,
 })
 
 vim.api.nvim_create_autocmd("LspAttach", {
