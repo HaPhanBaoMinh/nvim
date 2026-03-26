@@ -44,6 +44,32 @@ cmp.setup({
 
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
+-- mason-lspconfig v2+ uses Neovim 0.11 `vim.lsp.config` / `vim.lsp.enable` instead of setup_handlers + lspconfig.setup.
+vim.lsp.config("*", {
+	capabilities = capabilities,
+})
+
+vim.lsp.config("lua_ls", {
+	settings = {
+		Lua = {
+			runtime = { version = "LuaJIT" },
+			workspace = {
+				checkThirdParty = false,
+				library = vim.api.nvim_get_runtime_file("", true),
+			},
+		},
+	},
+})
+
+-- ~/.cargo/bin/rust-analyzer is often a rustup proxy; without `rustup component add rust-analyzer`
+-- it exits 1 ("Unknown binary ... in official toolchain"). Prefer Mason's binary only.
+local mason_ra = vim.fn.stdpath("data") .. "/mason/bin/rust-analyzer"
+if vim.fn.executable(mason_ra) == 1 then
+	vim.lsp.config("rust_analyzer", {
+		cmd = { mason_ra },
+	})
+end
+
 require("mason").setup()
 require("mason-lspconfig").setup({
 	ensure_installed = {
@@ -53,40 +79,6 @@ require("mason-lspconfig").setup({
 		"rust_analyzer",
 		"clangd",
 	},
-})
-
-require("mason-lspconfig").setup_handlers({
-	function(server_name)
-		require("lspconfig")[server_name].setup({
-			capabilities = capabilities,
-		})
-	end,
-	["lua_ls"] = function()
-		require("lspconfig").lua_ls.setup({
-			capabilities = capabilities,
-			settings = {
-				Lua = {
-					runtime = { version = "LuaJIT" },
-					workspace = {
-						checkThirdParty = false,
-						library = vim.api.nvim_get_runtime_file("", true),
-					},
-				},
-			},
-		})
-	end,
-	-- ~/.cargo/bin/rust-analyzer is often a rustup proxy; without `rustup component add rust-analyzer`
-	-- it exits 1 ("Unknown binary ... in official toolchain"). Prefer Mason's binary only.
-	["rust_analyzer"] = function()
-		local mason_ra = vim.fn.stdpath("data") .. "/mason/bin/rust-analyzer"
-		if vim.fn.executable(mason_ra) ~= 1 then
-			return
-		end
-		require("lspconfig").rust_analyzer.setup({
-			capabilities = capabilities,
-			cmd = { mason_ra },
-		})
-	end,
 })
 
 vim.api.nvim_create_autocmd("LspAttach", {

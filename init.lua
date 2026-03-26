@@ -40,11 +40,11 @@ Plug('MeanderingProgrammer/render-markdown.nvim') --render md inline
 Plug('emmanueltouzery/decisive.nvim') --view csv files
 Plug('folke/twilight.nvim') --surrounding dim
 
--- LSP / completion / format / DAP (Mason pinned v1.x for Neovim 0.9)
+-- LSP / completion / format / DAP (Neovim 0.11+: mason-lspconfig v2 uses vim.lsp.config; see lua/plugins/lsp.lua)
 Plug('nvim-lua/plenary.nvim')
 Plug('mason-org/mason.nvim', { ['tag'] = 'v1.9.0' })
-Plug('mason-org/mason-lspconfig.nvim', { ['tag'] = 'v1.32.0' })
-Plug('neovim/nvim-lspconfig', { ['tag'] = 'v1.8.0' }) -- v2+ uses vim.uv (Neovim 0.10+)
+Plug('mason-org/mason-lspconfig.nvim', { ['tag'] = 'v2.1.0' })
+Plug('neovim/nvim-lspconfig', { ['tag'] = 'v1.8.0' }) -- bump to latest tag if you want newer servers / fixes
 Plug('jay-babu/mason-nvim-dap.nvim', { ['tag'] = 'v1.2.2' })
 Plug('mfussenegger/nvim-dap')
 Plug('rcarriga/nvim-dap-ui', { ['tag'] = 'v3.9.3' }) -- v4+ needs nvim-nio / vim.uv
