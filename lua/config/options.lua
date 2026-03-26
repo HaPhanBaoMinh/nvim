@@ -13,7 +13,11 @@ local options = {
 	cursorline = true, --highlight line
 
 	title = true, --automatic window titlebar
-	
+
+	-- new splits open in the direction you expect (right / below)
+	splitright = true,
+	splitbelow = true,
+
 	number = true, --numbering lines
 	relativenumber = true, --toggle bound to leader nn
 	numberwidth = 4,

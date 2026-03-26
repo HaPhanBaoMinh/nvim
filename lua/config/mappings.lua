@@ -42,6 +42,14 @@ map("n", "<F6>", ":resize -2<CR>")
 map("n", "<F7>", ":vertical resize +2<CR>")
 map("n", "<F8>", ":vertical resize -2<CR>")
 
+-- splits (same buffer) — <leader>vs still does vsplit + next buffer
+map("n", "<leader>wv", "<Cmd>vsplit<CR>")
+map("n", "<leader>wh", "<Cmd>split<CR>")
+-- close splits / panes (not buffers; use <leader>q for buffer close)
+map("n", "<leader>wc", "<Cmd>close<CR>")
+map("n", "<leader>wo", "<Cmd>only<CR>")
+map("n", "<leader>w=", "<C-w>=")
+
 -- fzf and grep
 map("n", "<leader>f", ":lua require('fzf-lua').files()<CR>") --search cwd
 map("n", "<leader>Fh", ":lua require('fzf-lua').files({ cwd = '~/' })<CR>") --search home

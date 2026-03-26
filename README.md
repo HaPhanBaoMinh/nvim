@@ -1,20 +1,20 @@
-# Neovim configuration — tutorial
+# Neovim configuration
 
-This config uses **[vim-plug](https://github.com/junegunn/vim-plug)** and Lua. Plugins load in two stages: some run immediately, heavier ones after a short defer (see `init.lua`) so the first screen appears quickly.
+Personal Neovim setup using **[vim-plug](https://github.com/junegunn/vim-plug)** and Lua. A small set of plugins loads immediately (theme, buffers, status line); heavier modules are `require`’d after a short defer in `init.lua` so the first screen paints quickly.
 
 ---
 
 ## Requirements
 
-- **Neovim 0.9.x** (the repo pins several plugins for 0.9; Neovim 0.10+ would allow newer Mason, `nvim-lspconfig`, Conform, etc.)
-- A **[Nerd Font](https://www.nerdfonts.com/)** (or similar) and a terminal that draws Unicode / icons cleanly
-- **Git** (for vim-plug and plugins)
-- **curl** (only if vim-plug is missing; `init.lua` can bootstrap it)
+- **Neovim 0.11+** — the LSP stack uses **`vim.lsp.config`** and **mason-lspconfig v2** (see `lua/plugins/lsp.lua`). Older Neovim needs an older mason-lspconfig / different LSP wiring.
+- A **[Nerd Font](https://www.nerdfonts.com/)** (or similar) and a terminal that renders Unicode / icons cleanly.
+- **Git** (for vim-plug and plugins).
+- **curl** — only used if vim-plug is missing; `init.lua` can bootstrap `plug.vim`.
 
 Optional but recommended for search:
 
-- **[ripgrep](https://github.com/BurntSushi/ripgrep)** (`rg`) — used by **fzf-lua** for fast grep
-- **[fd](https://github.com/sharkdp/fd)** — nicer file finding if you point fzf-lua at it (see fzf-lua docs)
+- **[ripgrep](https://github.com/BurntSushi/ripgrep)** (`rg`) — **fzf-lua** live grep.
+- **[fd](https://github.com/sharkdp/fd)** — faster file finding if you configure fzf-lua to use it (see fzf-lua docs).
 
 ---
 
@@ -32,7 +32,7 @@ Optional but recommended for search:
    :PlugInstall
    ```
 
-   If a plugin failed to clone mid-install, quit and run Neovim again, then `:PlugInstall` once more.
+   If a clone fails mid-install, quit Neovim, start again, and run `:PlugInstall` once more.
 
 3. Install language tools with **Mason**:
 
@@ -40,13 +40,13 @@ Optional but recommended for search:
    :Mason
    ```
 
-   Install at least what you use, for example:
+   Useful packages (match what you edit):
 
-   - **LSP:** `lua-language-server`, `pyright`, `bash-language-server`, `clangd`, `rust-analyzer` (see [Rust note](#rust-analyzer-and-mason) below)
-   - **Formatters** (for Conform): e.g. `stylua`, `ruff`, `black`, `prettier`, `shfmt`, `clang-format` — match the filetypes you edit
-   - **DAP** (debug): e.g. `debugpy` (Python), adapters Mason lists for C++/Lua as configured in `lua/plugins/dap.lua`
+   - **LSP:** `lua-language-server`, `pyright`, `bash-language-server`, `clangd`, `rust-analyzer` (see [Rust note](#rust-analyzer-and-mason))
+   - **Formatters** (Conform): e.g. `stylua`, `ruff`, `black`, `prettier`, `shfmt`, `clang-format`
+   - **DAP:** e.g. `debugpy` (Python); see `lua/plugins/dap.lua` for Mason DAP names
 
-4. Install **external linters** that `nvim-lint` expects (system or Mason where available), e.g. `ruff`, `cppcheck`, `stylelint`, `htmlhint`, or adjust `lua/plugins/nvim-lint.lua`.
+4. Install **external linters** that **nvim-lint** expects (system or Mason), e.g. `ruff`, `cppcheck`, `stylelint`, `htmlhint`, or edit `lua/plugins/nvim-lint.lua`.
 
 ---
 
@@ -54,14 +54,14 @@ Optional but recommended for search:
 
 | Path | Role |
 |------|------|
-| `init.lua` | vim-plug plugin list, deferred `require()` loop, bootstrap |
-| `lua/config/mappings.lua` | All keymaps (leader is **Space**) |
-| `lua/config/options.lua` | `vim.opt`, diagnostic UI |
+| `init.lua` | vim-plug list, deferred `require()` loop, vim-plug bootstrap |
+| `lua/config/mappings.lua` | Keymaps (leader is **Space**) |
+| `lua/config/options.lua` | `vim.opt`, diagnostics UI, split defaults (`splitright` / `splitbelow`) |
 | `lua/config/autocmd.lua` | Autocommands (lint on write, markdown spell, yank highlight, …) |
 | `lua/config/theme.lua` | Theme cycle + `lua/config/saved_theme` persistence |
 | `lua/plugins/*.lua` | Per-plugin setup |
 
-To **add or remove** a plugin: edit the `Plug(...)` lines in `init.lua`, add or remove the matching `require("plugins....")` (immediate or inside the `defer_fn` list), then `:PlugInstall` / `:PlugClean` as needed.
+To **add or remove** a plugin: edit `Plug(...)` in `init.lua`, add or remove the matching `require("plugins....")` (immediate block or `defer_fn` list), then `:PlugInstall` / `:PlugClean`.
 
 ---
 
@@ -69,81 +69,83 @@ To **add or remove** a plugin: edit the `Plug(...)` lines in `init.lua`, add or 
 
 ### UI and editing
 
-| Plugin | Config file | What it does |
-|--------|-------------|--------------|
-| **catppuccin**, **gruvbox**, **pywal16** | `lua/plugins/colorscheme.lua` | Color schemes; cycle with `<leader>p` (saves choice in `lua/config/saved_theme`) |
+| Plugin | Config file | Notes |
+|--------|-------------|--------|
+| **catppuccin**, **gruvbox**, **pywal16** | `lua/plugins/colorscheme.lua` | Cycle with `<leader>p` (choice saved under `lua/config/saved_theme`) |
 | **lualine** | `lua/plugins/lualine.lua` | Status line |
-| **nvim-web-devicons** | — | File-type icons |
-| **barbar** | `lua/plugins/barbar.lua` | Buffer tabs; Alt+number, pin, move |
+| **nvim-web-devicons** | — | Icons |
+| **barbar** | `lua/plugins/barbar.lua` | Buffer tabs; `Alt`+number, pin, move |
 | **alpha-nvim** | `lua/plugins/alpha.lua` | Startup dashboard when no file |
-| **nvim-tree** | `lua/plugins/nvim-tree.lua` | File tree; `<leader>t` |
-| **which-key** | `lua/plugins/which-key.lua` | Popup hints after leader (loads deferred) |
-| **Comment.nvim** | `lua/plugins/comment.lua` | Comment toggles (plugin defaults) |
-| **nvim-autopairs** | `lua/plugins/autopairs.lua` | Auto-close pairs |
-| **nvim-surround** | `lua/plugins/surround.lua` | Change/add/delete surroundings (`ys`, `ds`, `cs` — see plugin help) |
-| **indent-blankline** | `lua/plugins/indent-blankline.lua` | Indent guides |
-| **twilight** | `lua/plugins/twilight.lua` | Dim inactive code; `<leader>l` |
-| **nvim-colorizer** | `lua/plugins/colorizer.lua` | Highlight `#hex` colors in buffer |
+| **nvim-tree** | `lua/plugins/nvim-tree.lua` | File tree; `<leader>t` (loaded in defer) |
+| **which-key** | `lua/plugins/which-key.lua` | Leader hints (deferred) |
+| **Comment.nvim** | `lua/plugins/comment.lua` | Comment toggles |
+| **nvim-autopairs** | `lua/plugins/autopairs.lua` | Auto-close pairs (deferred) |
+| **nvim-surround** | `lua/plugins/surround.lua` | `ys` / `ds` / `cs` (see `:help nvim-surround`) |
+| **indent-blankline** | `lua/plugins/indent-blankline.lua` | Indent guides (deferred) |
+| **twilight** | `lua/plugins/twilight.lua` | Dim inactive code; `<leader>l` (deferred) |
+| **nvim-colorizer** | `lua/plugins/colorizer.lua` | Highlight `#hex` colors |
 
 ### Navigation and search
 
-| Plugin | What it does |
-|--------|--------------|
-| **fzf-lua** | Fuzzy files and grep (`<leader>f`, `<leader>g`, …) |
-| **FTerm** | Floating terminal; `<leader>z` (see mappings for close from terminal mode) |
+| Plugin | Notes |
+|--------|--------|
+| **fzf-lua** | Files and grep (`<leader>f`, `<leader>g`, …); deferred |
+| **FTerm** | Floating terminal `<leader>z` (deferred) |
 
 ### Syntax and docs
 
-| Plugin | What it does |
-|--------|--------------|
-| **nvim-treesitter** | Tree-sitter highlighting and folds (`foldexpr` in `options.lua`) |
-| **render-markdown** | Nicer Markdown display |
-| **decisive.nvim** | CSV alignment; `<leader>csa` / `<leader>csA`, `[c` / `]`c |
-| **ron.vim** | RON file syntax |
+| Plugin | Notes |
+|--------|--------|
+| **nvim-treesitter** | Highlighting / folds (`foldexpr` in `options.lua`); deferred |
+| **render-markdown** | Markdown rendering |
+| **decisive.nvim** | CSV: `<leader>csa` / `<leader>csA`, `[c` / `]c` |
+| **ron.vim** | RON syntax |
 
 ### Git
 
-| Plugin | Config | What it does |
-|--------|--------|--------------|
-| **gitsigns** | `lua/plugins/gitsigns.lua` (pinned for nvim 0.9) | Signs, hunks, blame-style features per plugin defaults |
+| Plugin | Notes |
+|--------|--------|
+| **gitsigns** | `lua/plugins/gitsigns.lua` (tag pinned for older Neovim compatibility) |
 
 ### Language intelligence (LSP, completion, format)
 
-| Piece | Config | What it does |
-|-------|--------|--------------|
-| **Mason** | `lua/plugins/lsp.lua` | Installs LSP binaries under `stdpath("data")/mason` |
-| **mason-lspconfig** | same | Maps Mason packages → `lspconfig` servers |
-| **nvim-lspconfig** | same | Starts LSP; buffer maps on attach (below) |
-| **nvim-cmp** | same | Completion in insert mode (LSP, LuaSnip, buffer, path) |
-| **LuaSnip** + **friendly-snippets** | same | Snippet expansion |
+| Piece | Config | Notes |
+|-------|--------|--------|
+| **Mason** | `lua/plugins/lsp.lua` | Binaries under `stdpath("data")/mason` |
+| **mason-lspconfig** | same | v2: `ensure_installed`, **`automatic_enable`** → `vim.lsp.enable()` for installed servers |
+| **nvim-lspconfig** | on `runtimepath` | Supplies `lsp/*.lua` defaults merged with `vim.lsp.config()` |
+| **nvim-cmp** | same | LSP, LuaSnip, buffer, path |
+| **LuaSnip** + **friendly-snippets** | same | Snippets |
 | **conform.nvim** | `lua/plugins/conform.lua` | Format on save + `<leader>cf` |
+
+LSP is configured with **`vim.lsp.config()`** (not `lspconfig.x.setup` + `setup_handlers`). Global **cmp** capabilities are applied via `vim.lsp.config("*", { capabilities = … })`; **lua_ls** and **rust_analyzer** (Mason `cmd`) get extra blocks in the same file.
 
 **Completion (insert mode):**
 
-- `<C-Space>` — trigger completion  
-- `<CR>` — confirm  
-- `<C-e>` — abort  
-- `<C-b>` / `<C-f>` — scroll docs  
-- `<Tab>` / `<S-Tab>` — LuaSnip jump forward/back when applicable  
+- `<C-Space>` — open completion (also `<C-@>` and `<C-.>` as fallbacks for awkward terminals / IME)
+- `<CR>` — confirm
+- `<C-e>` — abort
+- `<C-b>` / `<C-f>` — scroll docs
+- `<Tab>` / `<S-Tab>` — LuaSnip forward / back when applicable
 
 **LSP (after attach, normal / visual):**
 
 | Key | Action |
 |-----|--------|
-| `gd` | Go to definition |
-| `gD` | Go to declaration |
-| `K` | Hover documentation |
+| `gd` | Definition |
+| `gD` | Declaration |
+| `K` | Hover |
 | `gr` | References |
-| `<leader>cr` | Rename symbol |
+| `<leader>cr` | Rename |
 | `<leader>ca` | Code action |
 | `<leader>cd` | Diagnostic float |
-| `[d` / `]`d | Previous / next diagnostic |
+| `[d` / `]d` | Previous / next diagnostic |
 
 ### Lint
 
 | Plugin | Config |
 |--------|--------|
-| **nvim-lint** | `lua/plugins/nvim-lint.lua` — runs on **`:w`** (see `lua/config/autocmd.lua`) |
+| **nvim-lint** | `lua/plugins/nvim-lint.lua` — triggered on **`:w`** (see `lua/config/autocmd.lua`) |
 
 ### Tests
 
@@ -151,99 +153,108 @@ To **add or remove** a plugin: edit the `Plug(...)` lines in `init.lua`, add or 
 |--------|--------|
 | **vim-test** | `lua/plugins/vim-test.lua` — strategy `neovim`, Python runner `pytest` |
 
-You need the test runner installed (e.g. `pytest`, `npm test`, etc.) and filetype detection correct.
+Install the runner you need (`pytest`, `npm test`, etc.).
 
 ### Debug
 
 | Plugin | Config |
 |--------|--------|
 | **nvim-dap** | `lua/plugins/dap.lua` |
-| **nvim-dap-ui** | same — opens/closes with sessions |
-| **mason-nvim-dap** | same — can install adapters (`python`, `cppdbg`, `lua` in config) |
+| **nvim-dap-ui** | same |
+| **mason-nvim-dap** | same — e.g. `python`, `cppdbg`, `lua` |
 
 ### TODO highlights
 
-| Plugin | Config |
+| Plugin | Notes |
 |--------|--------|
-| **todo-comments** | `lua/plugins/todo-comments.lua` — highlights FIX/TODO/etc. |
-| `:TodoFzfLua` | Mapped to `<leader>xt` (needs fzf-lua loaded) |
+| **todo-comments** | `lua/plugins/todo-comments.lua` |
+| `<leader>xt` | `:TodoFzfLua` (needs fzf-lua) |
 
 ---
 
 ## Keymap reference (leader = Space)
 
-Buffers (barbar / built-in):
+### Buffers (Barbar / built-in)
 
-- `<S-h>` / `<S-l>` — previous / next buffer  
-- `<leader>q` / `<leader>Q` — close buffer (force)  
-- `<leader>U` — close all buffers  
-- `<leader>vs` — vertical split + next buffer  
-- `<A-1>` … `<A-9>`, `<A-0>` — go to buffer 1–9 / last  
-- `<A-p>` — pin  
-- `<Alt-Shift-h>` / `<Alt-Shift-l>` — move buffer  
+- `<S-h>` / `<S-l>` — previous / next buffer
+- `<leader>q` / `<leader>Q` — close buffer (force)
+- `<leader>U` — close all buffers
+- `<leader>vs` — vertical split + next buffer
+- `<A-1>` … `<A-9>`, `<A-0>` — go to buffer 1–9 / last
+- `<A-p>` — pin
+- `<A-S-h>` / `<A-S-l>` — move buffer in tab line
 
-Windows:
+### Windows and splits
 
-- `<C-hjkl>` — focus splits  
-- `<F5>`–`<F8>` — resize splits  
+`options.lua` sets **`splitright`** and **`splitbelow`** so `:vsplit` / `:split` open in a predictable direction.
 
-fzf-lua:
+- `<C-h>` / `<C-j>` / `<C-k>` / `<C-l>` — focus window left / down / up / right
+- `<F5>`–`<F8>` — resize height / width
+- `<leader>wv` — vertical split (same buffer), `:vsplit`
+- `<leader>wh` — horizontal split (same buffer), `:split`
+- `<leader>wc` — close **this** window (`:close`); buffer may stay listed — use `<leader>q` to close the buffer in Barbar
+- `<leader>wo` — only this window (`:only`)
+- `<leader>w=` — equalize split sizes (`Ctrl-w =`)
+- `<leader>w` — **`:w`** save (not a “window menu”)
 
-- `<leader>f` — files (cwd)  
-- `<leader>Fh` / `Fc` / `Fl` / `Ff` — files in home, `~/.config`, `~/.local/src`, parent  
-- `<leader>Fr` — resume  
-- `<leader>g` — live grep  
-- `<leader>G` — grep word under cursor  
+### fzf-lua
 
-Misc:
+- `<leader>f` — files (cwd)
+- `<leader>Fh` / `Fc` / `Fl` / `Ff` — files in home, `~/.config`, `~/.local/src`, parent
+- `<leader>Fr` — resume
+- `<leader>g` — live grep
+- `<leader>G` — grep word under cursor
 
-- `<leader><Space>` — `<C-o>` (jump back)  
-- `<leader>s` — `:%s/` substitute  
-- `<leader>t` — NvimTree toggle  
-- `<leader>p` — cycle theme  
-- `<leader>P` — `:PlugInstall`  
-- `<leader>z` — floating terminal (FTerm)  
-- Terminal mode `<Esc>` — leave terminal and close FTerm (see `mappings.lua`)  
-- `<leader>w` — write  
-- `<leader>R` — `:so %` (reload current file as config — useful when editing nvim config)  
-- `<leader>u` — open URL under cursor (`xdg-open`)  
-- `<leader>W` — toggle wrap  
-- `<leader>nn` — toggle relative line numbers  
-- `<leader>H` — htop in FTerm (requires `htop` on PATH)  
-- `<leader>ma` — `make` workflow in buffer directory (uses `sudo`; edit if you do not want that)  
+### Misc
 
-Tests: `<leader>tn` nearest, `tf` file, `ts` suite, `tl` last, `tv` visit.
+- `<leader><Space>` — `<C-o>` (jump back)
+- `<leader>s` — `:%s/` substitute
+- `<leader>t` — NvimTree toggle
+- `<leader>p` — cycle theme
+- `<leader>P` — `:PlugInstall`
+- `<leader>z` — floating terminal (FTerm)
+- Terminal mode `<Esc>` — normal mode + close FTerm (see `mappings.lua`)
+- `<leader>R` — `:so %` (reload current file — handy when editing config)
+- `<leader>u` — open URL under cursor (`xdg-open`)
+- `<leader>W` — toggle wrap
+- `<leader>nn` — toggle relative line numbers
+- `<leader>H` — htop in FTerm (`htop` on PATH)
+- `<leader>ma` — make workflow in buffer directory (uses `sudo`; change mapping if you do not want that)
 
-Format: `<leader>cf` (Conform, visual or normal).
+**Tests:** `<leader>tn` nearest, `tf` file, `ts` suite, `tl` last, `tv` visit.
 
-DAP: `<leader>db` breakpoint, `<leader>dB` conditional, `<leader>dc` continue, `<leader>di` step into, `<leader>do` step over, `<leader>dO` step out, `<leader>dr` REPL, `<leader>du` toggle UI.
+**Format:** `<leader>cf` (Conform).
+
+**DAP:** `<leader>db` breakpoint, `<leader>dB` conditional, `<leader>dc` continue, `<leader>di` step into, `<leader>do` step over, `<leader>dO` step out, `<leader>dr` REPL, `<leader>du` toggle UI.
 
 ---
 
 ## Rust analyzer and Mason
 
-Rust LSP is only started if **Mason’s** `rust-analyzer` binary exists:
+**rust-analyzer** is pointed at Mason’s binary when it exists:
 
 `~/.local/share/nvim/mason/bin/rust-analyzer`
 
-The `~/.cargo/bin/rust-analyzer` **rustup proxy** often exits with code 1 if you never ran `rustup component add rust-analyzer`. Installing **`rust-analyzer` inside `:Mason`** avoids that. After install, restart Neovim (or reopen the Rust file).
+The `~/.cargo/bin/rust-analyzer` **rustup proxy** often exits with code 1 until you run `rustup component add rust-analyzer`. Installing **rust-analyzer** via `:Mason` avoids that. Restart Neovim (or re-open the buffer) after install.
 
 ---
 
 ## Troubleshooting
 
-- **“Client quit with exit code 1”** — open `:LspLog` or `~/.local/state/nvim/lsp.log` and read the stderr line; often a missing binary or wrong PATH. Fix with `:Mason` or system packages.  
-- **No completion** — ensure the LSP for that filetype is installed and attached (`:LspInfo`).  
-- **Format does nothing** — install the formatter (Mason or OS) that Conform lists for that filetype in `lua/plugins/conform.lua`.  
-- **Plugin require failed (notify on startup)** — run `:PlugInstall`, quit Neovim completely, start again (first install can race with the deferred `require`).  
-- **Which-key empty** — it loads after defer; press `<Space>` and wait a moment on first open.
+- **`setup_handlers` / nil errors on startup** — You have **mason-lspconfig v2**; it does not expose `setup_handlers`. This config uses **`vim.lsp.config`** instead. If you see old API errors, run `:PlugUpdate` so tags in `init.lua` match (or align `lua/plugins/lsp.lua` with your installed mason-lspconfig version).
+- **“Client quit with exit code 1”** — `:LspLog` or `~/.local/state/nvim/lsp.log`; usually a missing binary or PATH issue. Fix with `:Mason` or system packages.
+- **No completion** — LSP installed and attached (`:checkhealth vim.lsp` / client list in recent Neovim).
+- **Format does nothing** — Install the formatter Conform expects for that filetype (`lua/plugins/conform.lua`).
+- **Plugin require failed (notify on startup)** — `:PlugInstall`, fully quit Neovim, start again (first install can race with deferred `require`).
+- **Which-key empty** — Loads after defer; press `<Space>` and wait a moment on first open.
 
 ---
 
 ## Further reading
 
-- Neovim help: `:help`, `:help lsp`, `:help diagnostic`  
-- [fzf-lua](https://github.com/ibhagwan/fzf-lua) — commands and preview setup  
-- [Mason](https://github.com/mason-org/mason.nvim) — registry of packages  
+- `:help`, `:help lsp`, `:help diagnostic`, `:help vim.lsp.config`
+- [fzf-lua](https://github.com/ibhagwan/fzf-lua)
+- [Mason](https://github.com/mason-org/mason.nvim)
+- [mason-lspconfig](https://github.com/mason-org/mason-lspconfig.nvim) (v2 changelog for migration notes)
 
 Enjoy.
