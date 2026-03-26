@@ -43,5 +43,8 @@ for k, v in pairs(options) do
 end
 
 vim.diagnostic.config({
-	signs = false,
+	signs = true,
+	virtual_text = true,
+	underline = true,
+	float = { border = "rounded" },
 })
