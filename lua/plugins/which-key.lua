@@ -3,6 +3,7 @@ wk.add({
 { "<leader>d", desc = "duplicate file" },
 { "<leader>p", desc = "toggle theme" },
 { "<leader>u", desc = "open url" },
+{ "<leader>o", desc = "open folder in Files" },
 { "<leader>z", desc = "floating terminal" },
 { "<leader>f", desc = "fzf" },
 { "<leader>g", desc = "grep" },

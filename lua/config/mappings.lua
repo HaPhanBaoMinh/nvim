@@ -84,6 +84,7 @@ map("n", "<leader>x", "<cmd>!chmod +x %<CR>") --make a file executable
 map("n", "<leader>mv", ":!mv % ") --move a file to a new dir
 map("n", "<leader>R", ":so %<CR>") --reload neovim config
 map("n", "<leader>u", ':silent !xdg-open "<cWORD>" &<CR>') --open a url under cursor
+map("n", "<leader>o", ":silent !xdg-open %:p:h &<CR>") -- OS file manager: folder of current buffer
 map("v", "<leader>i", "=gv") --auto indent
 map("n", "<leader>W", ":set wrap!<CR>") --toggle wrap
 map("n", "<leader>l", ":Twilight<CR>") --surrounding dim
