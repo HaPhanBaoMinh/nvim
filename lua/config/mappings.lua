@@ -66,7 +66,10 @@ map("n", "<leader><Space>", "<C-o>")
 -- gui-style shortcuts
 map("n", "<C-a>", "ggVG")
 map("v", "<C-c>", '"+y')
-map("n", "<C-s>", ":wq<CR>")
+map("n", "<C-s>", ":w<CR>")
+map("i", "<C-s>", "<Esc>:w<CR>")
+map("v", "<C-s>", "<Esc>:w<CR>")
+map("s", "<C-s>", "<Esc>:w<CR>") -- select mode (giống visual nhưng gõ thay thế vùng chọn)
 
 -- misc
 map("n", "<leader>s", ":%s//g<Left><Left>") --replace all

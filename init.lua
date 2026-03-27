@@ -42,11 +42,11 @@ Plug('MeanderingProgrammer/render-markdown.nvim')        --render md inline
 Plug('emmanueltouzery/decisive.nvim')                    --view csv files
 Plug('folke/twilight.nvim')                              --surrounding dim
 
--- LSP / completion / format / DAP (Neovim 0.11+: mason-lspconfig v2 uses vim.lsp.config; see lua/plugins/lsp.lua)
+-- LSP / completion / format / DAP (mason-lspconfig v1.x + Neovim 0.9; v2 needs 0.11+)
 Plug('nvim-lua/plenary.nvim')
 Plug('mason-org/mason.nvim', { ['tag'] = 'v1.9.0' })
-Plug('mason-org/mason-lspconfig.nvim', { ['tag'] = 'v2.1.0' })
-Plug('neovim/nvim-lspconfig', { ['tag'] = 'v1.8.0' }) -- bump to latest tag if you want newer servers / fixes
+Plug('mason-org/mason-lspconfig.nvim', { ['tag'] = 'v1.32.0' })
+Plug('neovim/nvim-lspconfig', { ['tag'] = 'v1.8.0' })
 Plug('jay-babu/mason-nvim-dap.nvim', { ['tag'] = 'v1.2.2' })
 Plug('mfussenegger/nvim-dap')
 Plug('rcarriga/nvim-dap-ui', { ['tag'] = 'v3.9.3' })       -- v4+ needs nvim-nio / vim.uv
@@ -71,27 +71,23 @@ require("config.mappings")
 require("config.options")
 require("config.autocmd")
 
-require("plugins.alpha")
--- require("plugins.autopairs")
-require("plugins.barbar")
-require("plugins.colorizer")
-require("plugins.colorscheme")
-require("plugins.comment")
--- require("plugins.fterm")
--- require("plugins.fzf-lua")
-require("plugins.gitsigns")
-require("plugins.lualine")
-require("plugins.nvim-lint")
--- require("plugins.nvim-tree")
-require("plugins.render-markdown")
--- require("plugins.treesitter")
--- require("plugins.twilight")
--- require("plugins.which-key")
+-- LSP + nvim-cmp must load before CLI file buffers get FileType; deferring breaks first-buffer attach
+require("plugins.lsp")
 
--- defer heavy plugin setup so the first frame paints sooner (profile: nvim --startuptime /tmp/nvim.log +q)
+-- First paint: dashboard, bufferline, colorscheme registration, statusline (load_theme needs lualine)
+require("plugins.alpha")
+require("plugins.barbar")
+require("plugins.colorscheme")
+require("plugins.lualine")
+
+-- defer heavy / optional plugin setup (nvim --startuptime /tmp/nvim.log +q)
 vim.defer_fn(function()
 	for _, mod in ipairs({
-		"plugins.lsp",
+		"plugins.gitsigns",
+		"plugins.nvim-lint",
+		"plugins.colorizer",
+		"plugins.comment",
+		"plugins.render-markdown",
 		"plugins.conform",
 		"plugins.vim-test",
 		"plugins.surround",
