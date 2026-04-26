@@ -33,6 +33,46 @@ vim.api.nvim_create_autocmd("FileType", {
 	command = "setlocal spell wrap",
 })
 
+-- language-local editing defaults for primary stacks
+vim.api.nvim_create_autocmd("FileType", {
+	group = user_autocmds,
+	pattern = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
+	callback = function()
+		vim.opt_local.shiftwidth = 2
+		vim.opt_local.tabstop = 2
+		vim.opt_local.softtabstop = 2
+		vim.opt_local.expandtab = true
+	end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+	group = user_autocmds,
+	pattern = { "go", "gomod", "gowork", "gosum" },
+	callback = function()
+		vim.opt_local.shiftwidth = 4
+		vim.opt_local.tabstop = 4
+		vim.opt_local.softtabstop = 4
+		vim.opt_local.expandtab = false
+	end,
+})
+
+-- folding strategy for primary code stacks:
+-- prefer Treesitter when parser exists, else fallback to indent folds.
+vim.api.nvim_create_autocmd("FileType", {
+	group = user_autocmds,
+	pattern = { "go", "javascript", "javascriptreact", "typescript", "typescriptreact" },
+	callback = function()
+		local has_parser = pcall(vim.treesitter.get_parser, 0)
+		if has_parser then
+			vim.opt_local.foldmethod = "expr"
+			vim.opt_local.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+		else
+			vim.opt_local.foldmethod = "indent"
+			vim.opt_local.foldexpr = "0"
+		end
+	end,
+})
+
 -- disable automatic comment on newline
 vim.api.nvim_create_autocmd("FileType", {
 	group = user_autocmds,

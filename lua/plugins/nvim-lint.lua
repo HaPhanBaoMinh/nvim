@@ -1,6 +1,11 @@
 require('lint').linters_by_ft = { --some of these need to be installed from package manager
   lua = {'luac'},
   python = {'ruff'},
+  go = {'golangcilint'},
+  javascript = {'eslint_d'},
+  javascriptreact = {'eslint_d'},
+  typescript = {'eslint_d'},
+  typescriptreact = {'eslint_d'},
   sh = {'bash'},
   c = {'cppcheck'},
   rust = {'clippy'},

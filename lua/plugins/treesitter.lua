@@ -1,20 +1,36 @@
-return {
-  "nvim-treesitter/nvim-treesitter",
-  lazy = false,
-  build = ":TSUpdate",
-  config = function ()
-    local treesitter = require("nvim-treesitter")
-    treesitter.setup()
+local ok, ts = pcall(require, "nvim-treesitter")
+if not ok then
+	vim.schedule(function()
+		vim.notify("[treesitter] plugin missing, run :PlugInstall", vim.log.levels.WARN)
+	end)
+	return
+end
 
-	treesitter.install = { "bash", "c", "css", "cpp", "go", "html", "java", "javascript", "json", "lua", "markdown", "markdown_inline", "python", "rust", "tsx", "typescript" },
+ts.setup()
 
-    vim.api.nvim_create_autocmd('FileType', {
-      pattern = { "bash", "c", "css", "cpp", "go", "html", "java", "javascript", "json", "lua", "markdown", "markdown_inline", "python", "rust", "tsx", "typescript" },
+local langs = {
+	"bash",
+	"c",
+	"css",
+	"cpp",
+	"go",
+	"html",
+	"java",
+	"javascript",
+	"json",
+	"lua",
+	"markdown",
+	"markdown_inline",
+	"python",
+	"rust",
+	"tsx",
+	"typescript",
+}
 
-      callback = function()
-        vim.treesitter.start()
-        vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
-      end,
-    })
-  end
- }
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = langs,
+	callback = function()
+		vim.treesitter.start()
+		vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+	end,
+})

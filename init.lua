@@ -26,6 +26,7 @@ Plug('uZer/pywal16.nvim', { ['as'] = 'pywal16' })        --or, pywal colorscheme
 Plug('nvim-lualine/lualine.nvim')                        --statusline
 Plug('nvim-tree/nvim-web-devicons')                      --pretty icons
 Plug('folke/which-key.nvim')                             --mappings popup
+Plug('mrjones2014/smart-splits.nvim')                    --nvim/tmux pane nav + resize
 Plug('romgrk/barbar.nvim')                               --bufferline
 Plug('goolord/alpha-nvim')                               --pretty startup
 Plug('nvim-treesitter/nvim-treesitter')                  --improved syntax
@@ -33,19 +34,19 @@ Plug('mfussenegger/nvim-lint')                           --async linter
 Plug('nvim-tree/nvim-tree.lua')                          --file explorer
 Plug('windwp/nvim-autopairs')                            --autopairs
 Plug('lewis6991/gitsigns.nvim', { ['tag'] = 'v0.9.0' })  --git (v0.9.0: last version supporting nvim 0.9)
+Plug('tpope/vim-fugitive')                               --git powerhouse
+Plug('sindrets/diffview.nvim')                           --git diff UI
 Plug('numToStr/Comment.nvim')                            --easier comments
-Plug('norcalli/nvim-colorizer.lua')                      --color highlight
 Plug('ibhagwan/fzf-lua')                                 --fuzzy finder and grep
 Plug('numToStr/FTerm.nvim')                              --floating terminal
-Plug('ron-rs/ron.vim')                                   --ron syntax highlighting
 Plug('MeanderingProgrammer/render-markdown.nvim')        --render md inline
-Plug('emmanueltouzery/decisive.nvim')                    --view csv files
-Plug('folke/twilight.nvim')                              --surrounding dim
+Plug('folke/trouble.nvim')                               --diagnostics list UI
+Plug('towolf/vim-helm')                                  --helm chart templates
 
--- LSP / completion / format / DAP (mason-lspconfig v1.x + Neovim 0.9; v2 needs 0.11+)
+-- LSP / completion / format / DAP (mason-lspconfig v2 + Neovim 0.11 vim.lsp.config; see lua/plugins/lsp.lua)
 Plug('nvim-lua/plenary.nvim')
 Plug('mason-org/mason.nvim', { ['tag'] = 'v1.9.0' })
-Plug('mason-org/mason-lspconfig.nvim', { ['tag'] = 'v1.32.0' })
+Plug('mason-org/mason-lspconfig.nvim', { ['tag'] = 'v2.1.0' })
 Plug('neovim/nvim-lspconfig', { ['tag'] = 'v1.8.0' })
 Plug('jay-babu/mason-nvim-dap.nvim', { ['tag'] = 'v1.2.2' })
 Plug('mfussenegger/nvim-dap')
@@ -79,13 +80,13 @@ require("plugins.alpha")
 require("plugins.barbar")
 require("plugins.colorscheme")
 require("plugins.lualine")
+require("plugins.trouble")
 
 -- defer heavy / optional plugin setup (nvim --startuptime /tmp/nvim.log +q)
 vim.defer_fn(function()
 	for _, mod in ipairs({
 		"plugins.gitsigns",
 		"plugins.nvim-lint",
-		"plugins.colorizer",
 		"plugins.comment",
 		"plugins.render-markdown",
 		"plugins.conform",
@@ -93,13 +94,13 @@ vim.defer_fn(function()
 		"plugins.surround",
 		"plugins.indent-blankline",
 		"plugins.autopairs",
+		"plugins.smart-splits",
 		"plugins.fterm",
 		"plugins.fzf-lua",
 		"plugins.todo-comments",
 		"plugins.dap",
 		"plugins.nvim-tree",
 		"plugins.treesitter",
-		"plugins.twilight",
 		"plugins.which-key",
 	}) do
 		local ok, err = pcall(require, mod)

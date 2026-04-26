@@ -78,18 +78,6 @@ vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.s
 	max_height = 14,
 })
 
-require("mason").setup()
-require("mason-lspconfig").setup({
-	ensure_installed = {
-		"lua_ls",
-		"pyright",
-		"bashls",
-		"rust_analyzer",
-		"clangd",
-	},
-	automatic_installation = true,
-})
-
 --- Rust: Mason `bin/` shim, else unpacked binary (shim sometimes missing mid-install), else rustup.
 local function rust_analyzer_cmd()
 	local data = vim.fn.stdpath("data")
@@ -115,52 +103,77 @@ local function rust_analyzer_cmd()
 	return nil
 end
 
-require("mason-lspconfig").setup_handlers({
-	function(server_name)
-		require("lspconfig")[server_name].setup({
-			capabilities = capabilities,
-		})
-	end,
-	["lua_ls"] = function()
-		require("lspconfig").lua_ls.setup({
-			capabilities = capabilities,
-			single_file_support = true,
-			settings = {
-				Lua = {
-					runtime = { version = "LuaJIT" },
-					workspace = {
-						checkThirdParty = false,
-						library = vim.api.nvim_get_runtime_file("", true),
-					},
-				},
+local rust_cmd = rust_analyzer_cmd()
+if not rust_cmd then
+	vim.notify_once(
+		"Rust LSP: chạy :MasonInstall rust-analyzer HOẶC: rustup component add rust-analyzer",
+		vim.log.levels.WARN
+	)
+end
+
+-- mason-lspconfig v2: no setup_handlers — use vim.lsp.config (Neovim 0.11+) + automatic_enable.
+vim.lsp.config("*", {
+	capabilities = capabilities,
+})
+
+vim.lsp.config("lua_ls", {
+	single_file_support = true,
+	settings = {
+		Lua = {
+			runtime = { version = "LuaJIT" },
+			workspace = {
+				checkThirdParty = false,
+				library = vim.api.nvim_get_runtime_file("", true),
 			},
-		})
-	end,
-	["pyright"] = function()
-		require("lspconfig").pyright.setup({
-			capabilities = capabilities,
-			single_file_support = true,
-		})
-	end,
-	["rust_analyzer"] = function()
-		local cmd = rust_analyzer_cmd()
-		if not cmd then
-			vim.notify_once(
-				"Rust LSP: chạy :MasonInstall rust-analyzer HOẶC: rustup component add rust-analyzer",
-				vim.log.levels.WARN
-			)
-			return
-		end
-		require("lspconfig").rust_analyzer.setup({
-			capabilities = capabilities,
-			cmd = cmd,
-			settings = {
-				["rust-analyzer"] = {
-					cargo = { allFeatures = true },
-				},
+		},
+	},
+})
+
+vim.lsp.config("pyright", {
+	single_file_support = true,
+})
+
+vim.lsp.config("gopls", {
+	single_file_support = true,
+	settings = {
+		gopls = {
+			analyses = {
+				unusedparams = true,
+				shadow = true,
 			},
-		})
-	end,
+			staticcheck = true,
+			gofumpt = true,
+		},
+	},
+})
+
+vim.lsp.config("ts_ls", {
+	single_file_support = true,
+})
+
+if rust_cmd then
+	vim.lsp.config("rust_analyzer", {
+		cmd = rust_cmd,
+		settings = {
+			["rust-analyzer"] = {
+				cargo = { allFeatures = true },
+			},
+		},
+	})
+end
+
+require("mason").setup()
+require("mason-lspconfig").setup({
+	ensure_installed = {
+		"lua_ls",
+		"pyright",
+		"gopls",
+		"ts_ls",
+		"bashls",
+		"rust_analyzer",
+		"clangd",
+	},
+	automatic_enable = rust_cmd and true or { exclude = { "rust_analyzer" } },
 })
 
 -- K (Shift+K): LSP float hover when a server supports it; otherwise built-in K

@@ -5,6 +5,9 @@ local options = {
 	showcmd = false,
 	wrap = true, --toggle bound to leader W
 	mouse = "a", --enable mouse
+	timeout = true,
+	timeoutlen = 400, --faster key sequence resolution (leader feels snappier)
+	ttimeoutlen = 10,
 	clipboard = "unnamedplus", --system clipboard integration
 	history = 100, --command line history
 	swapfile = false, --swap just gets in the way, usually
@@ -29,7 +32,7 @@ local options = {
 
 	foldmethod = "expr",
 	foldlevel = 99, --disable folding, lower #s enable
-	foldexpr = "nvim_treesitter#foldexpr()",
+	foldexpr = "v:lua.vim.treesitter.foldexpr()",
 	
 	termguicolors = true,
 

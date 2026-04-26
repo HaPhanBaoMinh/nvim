@@ -1,7 +1,7 @@
 -- mappings, including plugins
 
-local function map(m, k, v)
-	vim.keymap.set(m, k, v, { noremap = true, silent = true })
+local function map(m, k, v, desc)
+	vim.keymap.set(m, k, v, { noremap = true, silent = true, desc = desc })
 end
 
 -- set leader
@@ -9,120 +9,138 @@ map("", "<Space>", "<Nop>")
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
+local ok_smart_splits, smart_splits = pcall(require, "smart-splits")
+
 -- buffers
-map("n", "<S-l>", ":bnext<CR>")
-map("n", "<S-h>", ":bprevious<CR>")
-map("n", "<leader>q", ":BufferClose<CR>")
-map("n", "<leader>Q", ":BufferClose!<CR>")
-map("n", "<leader>U", ":bufdo bd<CR>") --close all buffers
-map('n', '<leader>vs', ':vsplit<CR>:bnext<CR>') --ver split + open next buffer
+map("n", "<leader>bn", "<Cmd>BufferNext<CR>", "Buffer next")
+map("n", "<leader>bp", "<Cmd>BufferPrevious<CR>", "Buffer previous")
+map("n", "<leader>bd", "<Cmd>BufferClose<CR>", "Buffer close")
+map("n", "<leader>bD", "<Cmd>BufferClose!<CR>", "Buffer close force")
+map("n", "<leader>ba", "<Cmd>bufdo bd<CR>", "Buffer close all")
+map("n", "<leader>bh", "<Cmd>BufferMovePrevious<CR>", "Buffer move left")
+map("n", "<leader>bl", "<Cmd>BufferMoveNext<CR>", "Buffer move right")
+map("n", "<leader>bP", "<Cmd>BufferPin<CR>", "Buffer pin")
+map("n", "<leader>1", "<Cmd>BufferGoto 1<CR>", "Buffer 1")
+map("n", "<leader>2", "<Cmd>BufferGoto 2<CR>", "Buffer 2")
+map("n", "<leader>3", "<Cmd>BufferGoto 3<CR>", "Buffer 3")
+map("n", "<leader>4", "<Cmd>BufferGoto 4<CR>", "Buffer 4")
+map("n", "<leader>5", "<Cmd>BufferGoto 5<CR>", "Buffer 5")
+map("n", "<leader>6", "<Cmd>BufferGoto 6<CR>", "Buffer 6")
+map("n", "<leader>7", "<Cmd>BufferGoto 7<CR>", "Buffer 7")
+map("n", "<leader>8", "<Cmd>BufferGoto 8<CR>", "Buffer 8")
+map("n", "<leader>9", "<Cmd>BufferGoto 9<CR>", "Buffer 9")
+map("n", "<leader>0", "<Cmd>BufferLast<CR>", "Buffer last")
 
--- buffer position nav + reorder
-map('n', '<AS-h>', '<Cmd>BufferMovePrevious<CR>')
-map('n', '<AS-l>', '<Cmd>BufferMoveNext<CR>')
-map('n', '<A-1>', '<Cmd>BufferGoto 1<CR>')
-map('n', '<A-2>', '<Cmd>BufferGoto 2<CR>')
-map('n', '<A-3>', '<Cmd>BufferGoto 3<CR>')
-map('n', '<A-4>', '<Cmd>BufferGoto 4<CR>')
-map('n', '<A-5>', '<Cmd>BufferGoto 5<CR>')
-map('n', '<A-6>', '<Cmd>BufferGoto 6<CR>')
-map('n', '<A-7>', '<Cmd>BufferGoto 7<CR>')
-map('n', '<A-8>', '<Cmd>BufferGoto 8<CR>')
-map('n', '<A-9>', '<Cmd>BufferGoto 9<CR>')
-map('n', '<A-0>', '<Cmd>BufferLast<CR>')
-map('n', '<A-p>', '<Cmd>BufferPin<CR>')
+-- windows and splits
+if ok_smart_splits then
+	map("n", "<C-h>", smart_splits.move_cursor_left, "Pane left")
+	map("n", "<C-j>", smart_splits.move_cursor_down, "Pane down")
+	map("n", "<C-k>", smart_splits.move_cursor_up, "Pane up")
+	map("n", "<C-l>", smart_splits.move_cursor_right, "Pane right")
+	map("n", "<leader>sH", smart_splits.resize_left, "Split resize left")
+	map("n", "<leader>sJ", smart_splits.resize_down, "Split resize down")
+	map("n", "<leader>sK", smart_splits.resize_up, "Split resize up")
+	map("n", "<leader>sL", smart_splits.resize_right, "Split resize right")
+else
+	map("n", "<C-h>", "<C-w>h", "Pane left")
+	map("n", "<C-j>", "<C-w>j", "Pane down")
+	map("n", "<C-k>", "<C-w>k", "Pane up")
+	map("n", "<C-l>", "<C-w>l", "Pane right")
+	map("n", "<leader>sH", "<Cmd>vertical resize -3<CR>", "Split resize left")
+	map("n", "<leader>sJ", "<Cmd>resize +3<CR>", "Split resize down")
+	map("n", "<leader>sK", "<Cmd>resize -3<CR>", "Split resize up")
+	map("n", "<leader>sL", "<Cmd>vertical resize +3<CR>", "Split resize right")
+end
+map("n", "<leader>sv", "<Cmd>vsplit<CR>", "Split vertical")
+map("n", "<leader>sh", "<Cmd>split<CR>", "Split horizontal")
+map("n", "<leader>sc", "<Cmd>close<CR>", "Split close")
+map("n", "<leader>so", "<Cmd>only<CR>", "Split only")
+map("n", "<leader>se", "<C-w>=", "Split equalize")
 
--- windows - ctrl nav, fn resize
-map("n", "<C-h>", "<C-w>h")
-map("n", "<C-j>", "<C-w>j")
-map("n", "<C-k>", "<C-w>k")
-map("n", "<C-l>", "<C-w>l")
-map("n", "<F5>", ":resize +2<CR>")
-map("n", "<F6>", ":resize -2<CR>")
-map("n", "<F7>", ":vertical resize +2<CR>")
-map("n", "<F8>", ":vertical resize -2<CR>")
-
--- splits (same buffer) — <leader>vs still does vsplit + next buffer
-map("n", "<leader>wv", "<Cmd>vsplit<CR>")
-map("n", "<leader>wh", "<Cmd>split<CR>")
--- close splits / panes (not buffers; use <leader>q for buffer close)
-map("n", "<leader>wc", "<Cmd>close<CR>")
-map("n", "<leader>wo", "<Cmd>only<CR>")
-map("n", "<leader>w=", "<C-w>=")
-
--- fzf and grep
-map("n", "<leader>f", ":lua require('fzf-lua').files()<CR>") --search cwd
-map("n", "<leader>Fh", ":lua require('fzf-lua').files({ cwd = '~/' })<CR>") --search home
-map("n", "<leader>Fc", ":lua require('fzf-lua').files({ cwd = '~/.config' })<CR>") --search .config
-map("n", "<leader>Fl", ":lua require('fzf-lua').files({ cwd = '~/.local/src' })<CR>") --search .local/src
-map("n", "<leader>Ff", ":lua require('fzf-lua').files({ cwd = '..' })<CR>") --search above
-map("n", "<leader>Fr", ":lua require('fzf-lua').resume()<CR>") --last search
-map("n", "<leader>g", ":lua require('fzf-lua').grep()<CR>") --grep
-map("n", "<leader>G", ":lua require('fzf-lua').grep_cword()<CR>") --grep word under cursor
+-- find/search
+map("n", "<leader>ff", "<Cmd>lua require('fzf-lua').files()<CR>", "Find files")
+map("n", "<leader>fr", "<Cmd>lua require('fzf-lua').resume()<CR>", "Find resume")
+map("n", "<leader>fg", "<Cmd>lua require('fzf-lua').grep()<CR>", "Find grep")
+map("n", "<leader>fw", "<Cmd>lua require('fzf-lua').grep_cword()<CR>", "Find word under cursor")
+map("n", "<leader>fh", "<Cmd>lua require('fzf-lua').files({ cwd = '~/' })<CR>", "Find home")
+map("n", "<leader>fc", "<Cmd>lua require('fzf-lua').files({ cwd = '~/.config' })<CR>", "Find config")
+map("n", "<leader>fl", "<Cmd>lua require('fzf-lua').files({ cwd = '~/.local/src' })<CR>", "Find local src")
 
 -- quick nav
-map("n", "<leader><Space>", "<C-o>")
+map("n", "<leader><Space>", "<C-o>", "Jump back")
 
 -- gui-style shortcuts
-map("n", "<C-a>", "ggVG")
-map("v", "<C-c>", '"+y')
-map("n", "<C-s>", ":w<CR>")
-map("i", "<C-s>", "<Esc>:w<CR>")
-map("v", "<C-s>", "<Esc>:w<CR>")
-map("s", "<C-s>", "<Esc>:w<CR>") -- select mode (giống visual nhưng gõ thay thế vùng chọn)
+map("n", "<C-a>", "ggVG", "Select all")
+map("v", "<C-c>", '"+y', "Copy to system clipboard")
+map("n", "<C-s>", "<Cmd>w<CR>", "Save")
+map("i", "<C-s>", "<Esc><Cmd>w<CR>", "Save")
+map("v", "<C-s>", "<Esc><Cmd>w<CR>", "Save")
+map("s", "<C-s>", "<Esc><Cmd>w<CR>", "Save")
+
+-- files and tools
+map("n", "<leader>as", "<Cmd>w<CR>", "Action save")
+map("n", "<leader>aa", ":w ", "Action save as")
+map("n", "<leader>ax", "<Cmd>!chmod +x %<CR>", "Action chmod +x")
+map("n", "<leader>am", ":!mv % ", "Action move file")
+map("n", "<leader>e", "<Cmd>NvimTreeToggle<CR>", "Explorer toggle")
+map("n", "<leader>tt", "<Cmd>lua require('FTerm').open()<CR>", "Terminal toggle")
+map("t", "<Esc>", '<C-\\><C-n><CMD>lua require("FTerm").close()<CR>', "Terminal close")
+map("n", "<leader>th", function()
+	_G.htop:toggle()
+end, "Terminal htop")
 
 -- misc
-map("n", "<leader>s", ":%s//g<Left><Left>") --replace all
-map("n", "<leader>t", ":NvimTreeToggle<CR>") --open file explorer
-map("n", "<leader>p", switch_theme) --cycle themes
-map("n", "<leader>P", ":PlugInstall<CR>") --vim-plug
-map('n', '<leader>z', ":lua require('FTerm').open()<CR>") --open term
-map('t', '<Esc>', '<C-\\><C-n><CMD>lua require("FTerm").close()<CR>') --preserves session
-map("n", "<leader>w", ":w<CR>") --write but one less key
-map("n", "<leader>d", ":w ") --duplicate to new name
-map("n", "<leader>x", "<cmd>!chmod +x %<CR>") --make a file executable
-map("n", "<leader>mv", ":!mv % ") --move a file to a new dir
-map("n", "<leader>R", ":so %<CR>") --reload neovim config
-map("n", "<leader>u", ':silent !xdg-open "<cWORD>" &<CR>') --open a url under cursor
-map("n", "<leader>o", ":silent !xdg-open %:p:h &<CR>") -- OS file manager: folder of current buffer
-map("v", "<leader>i", "=gv") --auto indent
-map("n", "<leader>W", ":set wrap!<CR>") --toggle wrap
-map("n", "<leader>l", ":Twilight<CR>") --surrounding dim
-
--- vim-test (requires runners in PATH, e.g. pytest)
-map("n", "<leader>tn", ":TestNearest<CR>")
-map("n", "<leader>tf", ":TestFile<CR>")
-map("n", "<leader>ts", ":TestSuite<CR>")
-map("n", "<leader>tl", ":TestLast<CR>")
-map("n", "<leader>tv", ":TestVisit<CR>")
-
--- todo-comments (fzf-lua picker; loads after fzf-lua in defer)
-map("n", "<leader>xt", ":TodoFzfLua<CR>")
-
--- decisive csv
-map("n", "<leader>csa", ":lua require('decisive').align_csv({})<cr>")
-map("n", "<leader>csA", ":lua require('decisive').align_csv_clear({})<cr>")
-map("n", "[c", ":lua require('decisive').align_csv_prev_col()<cr>")
-map("n", "]c", ":lua require('decisive').align_csv_next_col()<cr>")
-
-
-map("n", "<leader>H", function() --toggle htop in term
-    _G.htop:toggle()
-end)
-
-
-map("n", "<leader>ma", function() --quick make in dir of buffer
-	local bufdir = vim.fn.expand("%:p:h")
-	vim.cmd("lcd " .. bufdir)
-	vim.cmd("!sudo make uninstall && sudo make clean install %")
-end)
-
-
-map("n", "<leader>nn", function() --toggle relative vs absolute line numbers
+map("n", "<leader>rr", ":%s//g<Left><Left>", "Replace all")
+map("n", "<leader>pi", "<Cmd>PlugInstall<CR>", "Plugins install")
+map("n", "<leader>rc", "<Cmd>so %<CR>", "Reload current file")
+map("n", "<leader>ou", ':silent !xdg-open "<cWORD>" &<CR>', "Open URL")
+map("n", "<leader>of", "<Cmd>silent !xdg-open %:p:h &<CR>", "Open file folder")
+map("v", "<leader>i", "=gv", "Indent selection")
+map("n", "<leader>ut", switch_theme, "UI toggle theme")
+map("n", "<leader>uw", "<Cmd>set wrap!<CR>", "UI toggle wrap")
+map("n", "<leader>un", function()
 	if vim.wo.relativenumber then
 		vim.wo.relativenumber = false
 		vim.wo.number = true
 	else
 		vim.wo.relativenumber = true
 	end
-end)
+end, "UI toggle relative numbers")
+
+-- git (vim-fugitive)
+map("n", "<leader>gs", "<Cmd>Git<CR>", "Git status")
+map("n", "<leader>gd", "<Cmd>Gvdiffsplit<CR>", "Git diff split")
+map("n", "<leader>gb", "<Cmd>Git blame<CR>", "Git blame")
+map("n", "<leader>gD", "<Cmd>DiffviewOpen<CR>", "Git diffview open")
+map("n", "<leader>gh", "<Cmd>DiffviewFileHistory %<CR>", "Git file history")
+map("n", "<leader>gq", "<Cmd>DiffviewClose<CR>", "Git diffview close")
+
+-- build helper
+map("n", "<leader>ma", function()
+	local bufdir = vim.fn.expand("%:p:h")
+	vim.cmd("lcd " .. bufdir)
+	vim.cmd("!sudo make uninstall && sudo make clean install %")
+end, "Make all in buffer directory")
+
+-- vim-test (requires runners in PATH, e.g. pytest)
+map("n", "<leader>tn", "<Cmd>TestNearest<CR>", "Test nearest")
+map("n", "<leader>tf", "<Cmd>TestFile<CR>", "Test file")
+map("n", "<leader>ts", "<Cmd>TestSuite<CR>", "Test suite")
+map("n", "<leader>tl", "<Cmd>TestLast<CR>", "Test last")
+map("n", "<leader>tv", "<Cmd>TestVisit<CR>", "Test visit")
+
+-- todo-comments (fzf-lua picker; loads after fzf-lua in defer)
+map("n", "<leader>td", "<Cmd>TodoFzfLua<CR>", "Todo list")
+
+-- trouble.nvim
+map("n", "<leader>xx", "<Cmd>Trouble diagnostics toggle<CR>", "Trouble toggle diagnostics")
+map("n", "<leader>xd", "<Cmd>Trouble diagnostics toggle filter.buf=0<CR>", "Trouble buffer diagnostics")
+map("n", "<leader>xq", "<Cmd>Trouble qflist toggle<CR>", "Trouble quickfix list")
+map("n", "<leader>xl", "<Cmd>Trouble loclist toggle<CR>", "Trouble location list")
+
+-- folds
+map("n", "<leader>zc", "zc", "Fold close")
+map("n", "<leader>zo", "zo", "Fold open")
+map("n", "<leader>za", "za", "Fold toggle")
+map("n", "<leader>zM", "zM", "Fold close all")
+map("n", "<leader>zR", "zR", "Fold open all")
