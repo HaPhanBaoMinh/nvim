@@ -10,6 +10,7 @@ vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
 local ok_smart_splits, smart_splits = pcall(require, "smart-splits")
+local resize_step = 6
 
 -- buffers
 map("n", "<leader>bn", "<Cmd>BufferNext<CR>", "Buffer next")
@@ -33,24 +34,99 @@ map("n", "<leader>0", "<Cmd>BufferLast<CR>", "Buffer last")
 
 -- windows and splits
 if ok_smart_splits then
+	local function resize_with_count(direction)
+		local amount = vim.v.count1 * resize_step
+		return function()
+			smart_splits["resize_" .. direction](amount)
+		end
+	end
+
 	map("n", "<C-h>", smart_splits.move_cursor_left, "Pane left")
 	map("n", "<C-j>", smart_splits.move_cursor_down, "Pane down")
 	map("n", "<C-k>", smart_splits.move_cursor_up, "Pane up")
 	map("n", "<C-l>", smart_splits.move_cursor_right, "Pane right")
-	map("n", "<leader>sH", smart_splits.resize_left, "Split resize left")
-	map("n", "<leader>sJ", smart_splits.resize_down, "Split resize down")
-	map("n", "<leader>sK", smart_splits.resize_up, "Split resize up")
-	map("n", "<leader>sL", smart_splits.resize_right, "Split resize right")
+	map("n", "<leader>sH", resize_with_count("left"), "Split resize left (count x 6)")
+	map("n", "<leader>sJ", resize_with_count("down"), "Split resize down (count x 6)")
+	map("n", "<leader>sK", resize_with_count("up"), "Split resize up (count x 6)")
+	map("n", "<leader>sL", resize_with_count("right"), "Split resize right (count x 6)")
 else
+	local function resize_cmd(cmd_base)
+		return function()
+			vim.cmd(cmd_base .. (vim.v.count1 * resize_step))
+		end
+	end
+
 	map("n", "<C-h>", "<C-w>h", "Pane left")
 	map("n", "<C-j>", "<C-w>j", "Pane down")
 	map("n", "<C-k>", "<C-w>k", "Pane up")
 	map("n", "<C-l>", "<C-w>l", "Pane right")
-	map("n", "<leader>sH", "<Cmd>vertical resize -3<CR>", "Split resize left")
-	map("n", "<leader>sJ", "<Cmd>resize +3<CR>", "Split resize down")
-	map("n", "<leader>sK", "<Cmd>resize -3<CR>", "Split resize up")
-	map("n", "<leader>sL", "<Cmd>vertical resize +3<CR>", "Split resize right")
+	map("n", "<leader>sH", resize_cmd("vertical resize -"), "Split resize left (count x 6)")
+	map("n", "<leader>sJ", resize_cmd("resize +"), "Split resize down (count x 6)")
+	map("n", "<leader>sK", resize_cmd("resize -"), "Split resize up (count x 6)")
+	map("n", "<leader>sL", resize_cmd("vertical resize +"), "Split resize right (count x 6)")
 end
+
+local function resize_once(direction)
+	local amount = vim.v.count1 * resize_step
+	if ok_smart_splits then
+		smart_splits["resize_" .. direction](amount)
+	else
+		local command_map = {
+			left = "vertical resize -",
+			down = "resize +",
+			up = "resize -",
+			right = "vertical resize +",
+		}
+		vim.cmd(command_map[direction] .. amount)
+	end
+end
+
+local resize_mode_active = false
+local resize_mode_maps = {}
+local function resize_mode_unmap_all()
+	for _, lhs in ipairs(resize_mode_maps) do
+		pcall(vim.keymap.del, "n", lhs)
+	end
+	resize_mode_maps = {}
+end
+
+local function exit_resize_mode()
+	if not resize_mode_active then
+		return
+	end
+	resize_mode_unmap_all()
+	resize_mode_active = false
+	vim.notify("Resize mode off", vim.log.levels.INFO)
+end
+
+local function enter_resize_mode()
+	if resize_mode_active then
+		return
+	end
+	resize_mode_active = true
+	local function bind(lhs, rhs)
+		vim.keymap.set("n", lhs, rhs, { noremap = true, silent = true })
+		table.insert(resize_mode_maps, lhs)
+	end
+
+	bind("<Left>", function()
+		resize_once("left")
+	end)
+	bind("<Down>", function()
+		resize_once("down")
+	end)
+	bind("<Up>", function()
+		resize_once("up")
+	end)
+	bind("<Right>", function()
+		resize_once("right")
+	end)
+	bind("<Esc>", exit_resize_mode)
+
+	vim.notify("Resize mode on: use arrow keys, <Esc> to exit", vim.log.levels.INFO)
+end
+
+map("n", "<leader>sr", enter_resize_mode, "Split resize mode (arrows, Esc to quit)")
 map("n", "<leader>sv", "<Cmd>vsplit<CR>", "Split vertical")
 map("n", "<leader>sh", "<Cmd>split<CR>", "Split horizontal")
 map("n", "<leader>sc", "<Cmd>close<CR>", "Split close")
