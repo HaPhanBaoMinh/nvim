@@ -144,6 +144,8 @@ map("n", "<leader>fl", "<Cmd>lua require('fzf-lua').files({ cwd = '~/.local/src'
 
 -- quick nav
 map("n", "<leader><Space>", "<C-o>", "Jump back")
+map("n", "<leader>km", "<Cmd>edit ~/.config/nvim/lua/config/mappings.lua<CR>", "Help open nvim keymaps")
+map("n", "<leader>kt", "<Cmd>edit ~/.config/nvim/tmux/keymaps.conf<CR>", "Help open tmux keymaps")
 
 -- gui-style shortcuts
 map("n", "<C-a>", "ggVG", "Select all")
