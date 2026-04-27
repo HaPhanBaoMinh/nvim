@@ -25,7 +25,6 @@ wk.add({
 	{ "<leader>am", desc = "Action move file" },
 	{ "<leader>ax", desc = "Action chmod +x" },
 	{ "<leader>t", group = "test/term" },
-	{ "<leader>td", desc = "Todo list" },
 	{ "<leader>u", group = "ui" },
 	{ "<leader>o", group = "open" },
 	{ "<leader>g", group = "git" },

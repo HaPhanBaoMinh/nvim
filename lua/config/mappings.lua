@@ -205,9 +205,6 @@ map("n", "<leader>ts", "<Cmd>TestSuite<CR>", "Test suite")
 map("n", "<leader>tl", "<Cmd>TestLast<CR>", "Test last")
 map("n", "<leader>tv", "<Cmd>TestVisit<CR>", "Test visit")
 
--- todo-comments (fzf-lua picker; loads after fzf-lua in defer)
-map("n", "<leader>td", "<Cmd>TodoFzfLua<CR>", "Todo list")
-
 -- trouble.nvim
 map("n", "<leader>xx", "<Cmd>Trouble diagnostics toggle<CR>", "Trouble toggle diagnostics")
 map("n", "<leader>xd", "<Cmd>Trouble diagnostics toggle filter.buf=0<CR>", "Trouble buffer diagnostics")
