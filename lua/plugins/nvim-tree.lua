@@ -1,22 +1,26 @@
+local api = require("nvim-tree.api")
+
+local function on_attach(bufnr)
+	api.config.mappings.default_on_attach(bufnr)
+	-- y = name, Y = relative path, gy = absolute path (needs use_system_clipboard)
+end
+
 require("nvim-tree").setup({
-renderer = {
---note on icons:
---in some terminals, some patched fonts cut off glyphs if not given extra space
---either add extra space, disable icons, or change font
-	icons = {
-		show = {
-		file = false,
-		folder = false,
-		folder_arrow = true,
-		git = true,
+	renderer = {
+		icons = {
+			show = {
+				file = false,
+				folder = false,
+				folder_arrow = true,
+				git = true,
+			},
 		},
 	},
-},
 	view = {
 		width = 25,
-		side = 'left',
+		side = "left",
 	},
-	sync_root_with_cwd = true, --fix to open cwd with tree
+	sync_root_with_cwd = true,
 	respect_buf_cwd = true,
 	update_cwd = true,
 	update_focused_file = {
@@ -24,8 +28,10 @@ renderer = {
 		update_cwd = true,
 		update_root = true,
 	},
+	actions = {
+		use_system_clipboard = true,
+	},
+	on_attach = on_attach,
 })
 
 vim.g.nvim_tree_respect_buf_cwd = 1
-
--- use g? for bindings help while in tree

@@ -58,6 +58,10 @@ cmp.setup({
 
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
+local function has_executable(bin)
+	return vim.fn.executable(bin) == 1
+end
+
 -- Hover: one handler, dimensions from current &columns/&lines (not frozen at startup)
 local lsp_hover_fn = vim.lsp.handlers.hover
 local function hover_popup(err, result, ctx, config)
@@ -151,9 +155,21 @@ vim.lsp.config("ts_ls", {
 	single_file_support = true,
 })
 
+local function rust_workspace_root(bufnr)
+	local fname = vim.api.nvim_buf_get_name(bufnr)
+	if fname == "" then
+		return nil
+	end
+	local cargo = vim.fs.find("Cargo.toml", { path = fname, upward = true })[1]
+	return cargo and vim.fs.dirname(cargo) or nil
+end
+
 if rust_cmd then
 	vim.lsp.config("rust_analyzer", {
 		cmd = rust_cmd,
+		filetypes = { "rust" },
+		single_file_support = false,
+		root_dir = rust_workspace_root,
 		settings = {
 			["rust-analyzer"] = {
 				cargo = { allFeatures = true },
@@ -163,16 +179,24 @@ if rust_cmd then
 end
 
 require("mason").setup()
+
+local ensure_installed = { "lua_ls", "clangd", "rust_analyzer" }
+
+if has_executable("npm") then
+	vim.list_extend(ensure_installed, { "pyright", "ts_ls", "bashls" })
+else
+	vim.notify_once(
+		"TypeScript/Python LSP (ts_ls, pyright, bashls) cần npm. Cài: sudo apt install nodejs npm rồi :MasonInstall ts_ls",
+		vim.log.levels.WARN
+	)
+end
+
+if has_executable("go") then
+	table.insert(ensure_installed, "gopls")
+end
+
 require("mason-lspconfig").setup({
-	ensure_installed = {
-		"lua_ls",
-		"pyright",
-		"gopls",
-		"ts_ls",
-		"bashls",
-		"rust_analyzer",
-		"clangd",
-	},
+	ensure_installed = ensure_installed,
 	automatic_enable = rust_cmd and true or { exclude = { "rust_analyzer" } },
 })
 

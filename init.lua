@@ -18,6 +18,15 @@ local Plug = vim.fn['plug#']
 
 vim.g.start_time = vim.fn.reltime()
 vim.loader.enable() --  SPEEEEEEEEEEED 
+
+-- Neovim 0.12+: plugins still calling vim.tbl_flatten() trigger a deprecation prompt.
+-- Replace early so dap/mason/lualine/etc. use iter without "Press ENTER".
+if vim.iter and vim.fn.has("nvim-0.11") == 1 then
+	vim.tbl_flatten = function(t)
+		return vim.iter(t):flatten(math.huge):totable()
+	end
+end
+
 vim.call('plug#begin')
 
 Plug('catppuccin/nvim', { ['as'] = 'catppuccin' })       --colorscheme
@@ -50,7 +59,8 @@ Plug('mason-org/mason-lspconfig.nvim', { ['tag'] = 'v2.1.0' })
 Plug('neovim/nvim-lspconfig', { ['tag'] = 'v1.8.0' })
 Plug('jay-babu/mason-nvim-dap.nvim', { ['tag'] = 'v1.2.2' })
 Plug('mfussenegger/nvim-dap')
-Plug('rcarriga/nvim-dap-ui', { ['tag'] = 'v3.9.3' })       -- v4+ needs nvim-nio / vim.uv
+Plug('nvim-neotest/nvim-nio')
+Plug('rcarriga/nvim-dap-ui', { ['commit'] = '0b4816e' }) -- v3.9.3; v4+ needs nvim-nio
 Plug('stevearc/conform.nvim', { ['branch'] = 'nvim-0.9' }) -- main requires 0.10+
 Plug('hrsh7th/nvim-cmp')
 Plug('hrsh7th/cmp-nvim-lsp')

@@ -49,6 +49,24 @@ for k, v in pairs(options) do
 	vim.opt[k] = v
 end
 
+-- System clipboard: wl-clipboard when Wayland env exists, else OSC52 (Neovim 0.10+ built-in).
+local clipboard = require("config.clipboard")
+
+local function clip_copy(lines, _)
+	clipboard.copy_lines(lines)
+end
+
+local function clip_paste()
+	return clipboard.paste_lines()
+end
+
+vim.g.clipboard = {
+	name = "hybrid-wl-osc52",
+	copy = { ["+"] = clip_copy, ["*"] = clip_copy },
+	paste = { ["+"] = clip_paste, ["*"] = clip_paste },
+	cache_enabled = 0,
+}
+
 vim.diagnostic.config({
 	signs = true,
 	virtual_text = true,
