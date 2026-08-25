@@ -44,7 +44,12 @@ map("n", "<leader>kt", "<Cmd>edit ~/.config/nvim/tmux/keymaps.conf<CR>", "Help o
 
 -- gui-style shortcuts (do not remap y/Y — nvim-tree uses them for copy path)
 map("n", "<C-a>", "ggVG", "Select all")
-map("n", "<C-c>", '"+yy', "Copy line to clipboard")
+map("n", "<C-c>", function()
+	local lines = vim.api.nvim_buf_get_lines(0, vim.fn.line(".") - 1, vim.fn.line("."), false)
+	local clipboard = require("core.clipboard")
+	clipboard.copy_lines(lines)
+	vim.fn.setreg('"', lines, "V")
+end, "Copy line to clipboard")
 map("v", "<C-c>", '"+y', "Copy selection to clipboard")
 map("n", "<C-v>", '"+p', "Paste from clipboard")
 map("i", "<C-v>", '<Esc>"+pa', "Paste from clipboard")
