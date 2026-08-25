@@ -62,6 +62,15 @@ local function has_executable(bin)
 	return vim.fn.executable(bin) == 1
 end
 
+local function root_from_markers(markers)
+	return function(bufnr, on_dir)
+		local root = vim.fs.root(bufnr, markers)
+		if root then
+			on_dir(root)
+		end
+	end
+end
+
 -- Hover: one handler, dimensions from current &columns/&lines (not frozen at startup)
 local lsp_hover_fn = vim.lsp.handlers.hover
 local function hover_popup(err, result, ctx, config)
@@ -121,6 +130,9 @@ vim.lsp.config("*", {
 })
 
 vim.lsp.config("lua_ls", {
+	cmd = { "lua-language-server" },
+	filetypes = { "lua" },
+	root_dir = root_from_markers({ ".luarc.json", ".luacheckrc", ".git" }),
 	single_file_support = true,
 	settings = {
 		Lua = {
@@ -134,10 +146,16 @@ vim.lsp.config("lua_ls", {
 })
 
 vim.lsp.config("pyright", {
+	cmd = { "pyright-langserver", "--stdio" },
+	filetypes = { "python" },
+	root_dir = root_from_markers({ "pyproject.toml", "setup.py", "setup.cfg", "requirements.txt", "Pipfile", ".git" }),
 	single_file_support = true,
 })
 
 vim.lsp.config("gopls", {
+	cmd = { "gopls" },
+	filetypes = { "go", "gomod", "gowork", "gotmpl" },
+	root_dir = root_from_markers({ "go.work", "go.mod", ".git" }),
 	single_file_support = true,
 	settings = {
 		gopls = {
@@ -152,6 +170,9 @@ vim.lsp.config("gopls", {
 })
 
 vim.lsp.config("ts_ls", {
+	cmd = { "typescript-language-server", "--stdio" },
+	filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
+	root_dir = root_from_markers({ "tsconfig.json", "jsconfig.json", "package.json", ".git" }),
 	single_file_support = true,
 })
 
