@@ -178,8 +178,6 @@ if rust_cmd then
 	})
 end
 
-require("mason").setup()
-
 local ensure_installed = { "lua_ls", "clangd", "rust_analyzer" }
 
 if has_executable("npm") then

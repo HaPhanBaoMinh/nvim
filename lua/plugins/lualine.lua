@@ -1,4 +1,4 @@
-local lualine = require('lualine')
+local M = {}
 
 local diagnostics = {
 	"diagnostics",
@@ -40,29 +40,33 @@ local progress = function()
 	return chars[index] .. " " .. math.floor(line_ratio * 100) .. "%%"
 end
 
-lualine.setup({
-options = {
-	icons_enabled = true,
-	theme = "auto", --auto allows for theme switching
-	component_separators = { left = "", right = "" },
-	section_separators = { left = "", right = "" },
-	disabled_filetypes = { "alpha", "dashboard" },
-	always_divide_middle = true,
-	},
+function M.setup(theme)
+	require("lualine").setup({
+		options = {
+			icons_enabled = true,
+			theme = theme or "auto",
+			component_separators = { left = "", right = "" },
+			section_separators = { left = "", right = "" },
+			disabled_filetypes = { "alpha", "dashboard" },
+			always_divide_middle = true,
+		},
 
-sections = {
-	lualine_a = { branch },
-	lualine_b = { mode },
-	lualine_c = { diagnostics },
-	lualine_x = { diff, "fileformat", "filetype" },
-	lualine_y = { "location" },
-	lualine_z = { progress },
-	},
-	extensions = { 'nvim-tree' },
-})
+		sections = {
+			lualine_a = { branch },
+			lualine_b = { mode },
+			lualine_c = { diagnostics },
+			lualine_x = { diff, "fileformat", "filetype" },
+			lualine_y = { "location" },
+			lualine_z = { progress },
+		},
+		extensions = { "nvim-tree" },
+	})
+end
 
 -- transparency override if using old pywal, shouldn't be needed with 16
 -- vim.api.nvim_set_hl(0, "lualine_c_normal", { bg = "none" })
 -- vim.api.nvim_set_hl(0, "lualine_c_inactive", { bg = "none" })
 -- vim.api.nvim_set_hl(0, "lualine_x_normal", { bg = "none" })
 -- vim.api.nvim_set_hl(0, "lualine_x_inactive", { bg = "none" })
+
+return M

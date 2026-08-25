@@ -15,17 +15,6 @@ vim.api.nvim_create_autocmd("BufEnter", {
 	end,
 })
 
--- linting when file is written to (nvim-lint loads in deferred batch)
-vim.api.nvim_create_autocmd("BufWritePost", {
-	group = user_autocmds,
-	callback = function()
-		local ok, lint = pcall(require, "lint")
-		if ok then
-			lint.try_lint()
-		end
-	end,
-})
-
 -- spellcheck in md
 vim.api.nvim_create_autocmd("FileType", {
 	group = user_autocmds,

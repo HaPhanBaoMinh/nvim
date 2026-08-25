@@ -23,5 +23,5 @@ conform.setup({
 })
 
 vim.keymap.set({ "n", "v" }, "<leader>cf", function()
-	conform.format({ async = true, lsp_fallback = true })
+	conform.format({ async = true, lsp_format = "fallback" })
 end, { silent = true, desc = "Format buffer (conform)" })

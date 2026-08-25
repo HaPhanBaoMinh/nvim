@@ -3,7 +3,7 @@ local options = {
 	ruler = false, --disable extra numbering
 	showmode = false, --not needed due to lualine
 	showcmd = false,
-	wrap = true, --toggle bound to leader W
+	wrap = true, -- toggle bound to <leader>uw
 	mouse = "a", --enable mouse
 	timeout = true,
 	timeoutlen = 400, --faster key sequence resolution (leader feels snappier)
@@ -22,7 +22,7 @@ local options = {
 	splitbelow = true,
 
 	number = true, --numbering lines
-	relativenumber = true, --toggle bound to leader nn
+	relativenumber = true, -- toggle bound to <leader>un
 	numberwidth = 4,
 
 	smarttab = true, --indentation stuff
@@ -33,7 +33,7 @@ local options = {
 	foldmethod = "expr",
 	foldlevel = 99, --disable folding, lower #s enable
 	foldexpr = "v:lua.vim.treesitter.foldexpr()",
-	
+
 	termguicolors = true,
 
 	ignorecase = true, --ignore case while searching
@@ -42,15 +42,15 @@ local options = {
 	conceallevel = 2, --markdown conceal
 	concealcursor = "nc",
 
-	splitkeep = 'screen', --stablizie window open/close
+	splitkeep = "screen", -- stabilize the viewport when windows open/close
 }
 
 for k, v in pairs(options) do
 	vim.opt[k] = v
 end
 
--- System clipboard: wl-clipboard when Wayland env exists, else OSC52 (Neovim 0.10+ built-in).
-local clipboard = require("config.clipboard")
+-- System clipboard: xclip on GNOME/XWayland, then wl-clipboard, then OSC52.
+local clipboard = require("core.clipboard")
 
 local function clip_copy(lines, _)
 	clipboard.copy_lines(lines)

@@ -1,4 +1,6 @@
-require('lint').linters_by_ft = { --some of these need to be installed from package manager
+local lint = require("lint")
+
+lint.linters_by_ft = { -- some of these need to be installed from a package manager
   lua = {'luac'},
   python = {'ruff'},
   go = {'golangcilint'},
@@ -13,9 +15,9 @@ require('lint').linters_by_ft = { --some of these need to be installed from pack
   html = {'htmlhint'},
 }
 
--- Some linters require a file to be saved to disk, others support linting stdin input.
--- For such linters you could also define a more aggressive autocmd,
--- for example on the InsertLeave or TextChanged events.
--- To get the filetype of a buffer you can run := vim.bo.filetype.
-
--- lints on close, see autocmd
+vim.api.nvim_create_autocmd("BufWritePost", {
+	group = vim.api.nvim_create_augroup("user_lint", { clear = true }),
+	callback = function()
+		lint.try_lint()
+	end,
+})

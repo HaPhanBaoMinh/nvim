@@ -1,18 +1,8 @@
-local ok, ts = pcall(require, "nvim-treesitter")
-if not ok then
-	vim.schedule(function()
-		vim.notify("[treesitter] plugin missing, run :PlugInstall", vim.log.levels.WARN)
-	end)
-	return
-end
-
-ts.setup()
-
-local langs = {
+local languages = {
 	"bash",
 	"c",
-	"css",
 	"cpp",
+	"css",
 	"go",
 	"html",
 	"java",
@@ -27,10 +17,9 @@ local langs = {
 	"typescript",
 }
 
-vim.api.nvim_create_autocmd("FileType", {
-	pattern = langs,
-	callback = function()
-		vim.treesitter.start()
-		vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
-	end,
+require("nvim-treesitter.configs").setup({
+	ensure_installed = languages,
+	auto_install = false,
+	highlight = { enable = true },
+	indent = { enable = true },
 })

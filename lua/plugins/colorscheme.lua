@@ -1,15 +1,18 @@
--- catppuccin + gruvbox colorscheme configuration
+local M = {}
 
-require("catppuccin").setup({
-	flavour = "frappe",
-	transparent_background = true,
-        styles = {
-           sidebars = "transparent",
-           floats = "transparent",
-        },
-})
+function M.catppuccin()
+	require("catppuccin").setup({
+		flavour = "frappe",
+		transparent_background = true,
+		styles = {
+			sidebars = "transparent",
+			floats = "transparent",
+		},
+	})
+end
 
-require("gruvbox").setup({
+function M.gruvbox()
+	require("gruvbox").setup({
   terminal_colors = true, -- add neovim terminal colors
   undercurl = true,
   underline = true,
@@ -31,8 +34,7 @@ require("gruvbox").setup({
   overrides = {},
   dim_inactive = false,
   transparent_mode = true,
-})
+	})
+end
 
--- if you want to get rid of toggling and just set one scheme, you can set here
--- local colorscheme = "catppuccin"
--- vim.cmd('silent! colorscheme catppuccin')
+return M

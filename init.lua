@@ -1,126 +1,59 @@
--- bread's neovim config
--- keymaps are in lua/config/mappings.lua
--- install a patched font & ensure your terminal supports glyphs
--- enjoy :D
-
--- auto install vim-plug and plugins, if not found
-local data_dir = vim.fn.stdpath('data')
-if vim.fn.empty(vim.fn.glob(data_dir .. '/site/autoload/plug.vim')) == 1 then
-	vim.cmd('silent !curl -fLo ' ..
-		data_dir ..
-		'/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim')
-	vim.o.runtimepath = vim.o.runtimepath
-	vim.cmd('autocmd VimEnter * PlugInstall --sync | source $MYVIMRC')
-end
-
-local vim = vim
-local Plug = vim.fn['plug#']
-
 vim.g.start_time = vim.fn.reltime()
-vim.loader.enable() --  SPEEEEEEEEEEED 
+vim.loader.enable()
 
--- Neovim 0.12+: plugins still calling vim.tbl_flatten() trigger a deprecation prompt.
--- Replace early so dap/mason/lualine/etc. use iter without "Press ENTER".
-if vim.iter and vim.fn.has("nvim-0.11") == 1 then
-	vim.tbl_flatten = function(t)
-		return vim.iter(t):flatten(math.huge):totable()
+vim.g.mapleader = " "
+vim.g.maplocalleader = " "
+
+-- Pinned plugins still call this deprecated helper on Neovim 0.12. Keep the
+-- baseline compatibility behavior without paying for the warning prompt.
+if vim.iter then
+	vim.tbl_flatten = function(value)
+		return vim.iter(value):flatten(math.huge):totable()
 	end
 end
 
-vim.call('plug#begin')
-
-Plug('catppuccin/nvim', { ['as'] = 'catppuccin' })       --colorscheme
-Plug('ellisonleao/gruvbox.nvim', { ['as'] = 'gruvbox' }) --colorscheme 2
-Plug('uZer/pywal16.nvim', { ['as'] = 'pywal16' })        --or, pywal colorscheme
-Plug('nvim-lualine/lualine.nvim')                        --statusline
-Plug('nvim-tree/nvim-web-devicons')                      --pretty icons
-Plug('folke/which-key.nvim')                             --mappings popup
-Plug('mrjones2014/smart-splits.nvim')                    --nvim/tmux pane nav + resize
-Plug('romgrk/barbar.nvim')                               --bufferline
-Plug('goolord/alpha-nvim')                               --pretty startup
-Plug('nvim-treesitter/nvim-treesitter')                  --improved syntax
-Plug('mfussenegger/nvim-lint')                           --async linter
-Plug('nvim-tree/nvim-tree.lua')                          --file explorer
-Plug('windwp/nvim-autopairs')                            --autopairs
-Plug('lewis6991/gitsigns.nvim', { ['tag'] = 'v0.9.0' })  --git (v0.9.0: last version supporting nvim 0.9)
-Plug('tpope/vim-fugitive')                               --git powerhouse
-Plug('sindrets/diffview.nvim')                           --git diff UI
-Plug('numToStr/Comment.nvim')                            --easier comments
-Plug('ibhagwan/fzf-lua')                                 --fuzzy finder and grep
-Plug('numToStr/FTerm.nvim')                              --floating terminal
-Plug('MeanderingProgrammer/render-markdown.nvim')        --render md inline
-Plug('folke/trouble.nvim')                               --diagnostics list UI
-Plug('towolf/vim-helm')                                  --helm chart templates
-
--- LSP / completion / format / DAP (mason-lspconfig v2 + Neovim 0.11 vim.lsp.config; see lua/plugins/lsp.lua)
-Plug('nvim-lua/plenary.nvim')
-Plug('mason-org/mason.nvim', { ['tag'] = 'v1.9.0' })
-Plug('mason-org/mason-lspconfig.nvim', { ['tag'] = 'v2.1.0' })
-Plug('neovim/nvim-lspconfig', { ['tag'] = 'v1.8.0' })
-Plug('jay-babu/mason-nvim-dap.nvim', { ['tag'] = 'v1.2.2' })
-Plug('mfussenegger/nvim-dap')
-Plug('nvim-neotest/nvim-nio')
-Plug('rcarriga/nvim-dap-ui', { ['commit'] = '0b4816e' }) -- v3.9.3; v4+ needs nvim-nio
-Plug('stevearc/conform.nvim', { ['branch'] = 'nvim-0.9' }) -- main requires 0.10+
-Plug('hrsh7th/nvim-cmp')
-Plug('hrsh7th/cmp-nvim-lsp')
-Plug('hrsh7th/cmp-buffer')
-Plug('hrsh7th/cmp-path')
-Plug('L3MON4D3/LuaSnip')
-Plug('saadparwaiz1/cmp_luasnip')
-Plug('rafamadriz/friendly-snippets')
-Plug('kylechui/nvim-surround')
-Plug('lukas-reineke/indent-blankline.nvim')
-Plug('folke/todo-comments.nvim', { ['tag'] = 'v1.4.0' }) -- v1.5+ uses vim.uv
-Plug('vim-test/vim-test')
-
-vim.call('plug#end')
-
--- move config and plugin config to alternate files
-require("config.theme")
-require("config.mappings")
-require("config.options")
-require("config.autocmd")
-
--- LSP + nvim-cmp must load before CLI file buffers get FileType; deferring breaks first-buffer attach
-require("plugins.lsp")
-
--- First paint: dashboard, bufferline, colorscheme registration, statusline (load_theme needs lualine)
-require("plugins.alpha")
-require("plugins.barbar")
-require("plugins.colorscheme")
-require("plugins.lualine")
-require("plugins.trouble")
-
--- defer heavy / optional plugin setup (nvim --startuptime /tmp/nvim.log +q)
-vim.defer_fn(function()
-	for _, mod in ipairs({
-		"plugins.gitsigns",
-		"plugins.nvim-lint",
-		"plugins.comment",
-		"plugins.render-markdown",
-		"plugins.conform",
-		"plugins.vim-test",
-		"plugins.surround",
-		"plugins.indent-blankline",
-		"plugins.autopairs",
-		"plugins.smart-splits",
-		"plugins.fterm",
-		"plugins.fzf-lua",
-		"plugins.todo-comments",
-		"plugins.dap",
-		"plugins.nvim-tree",
-		"plugins.treesitter",
-		"plugins.which-key",
-	}) do
-		local ok, err = pcall(require, mod)
-		if not ok then
-			vim.schedule(function()
-				vim.notify(("[plugins] require " .. mod .. " failed:\n" .. tostring(err)),
-					vim.log.levels.WARN)
-			end)
-		end
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.uv.fs_stat(lazypath) then
+	local result = vim.fn.system({
+		"git",
+		"clone",
+		"--filter=blob:none",
+		"--branch=stable",
+		"https://github.com/folke/lazy.nvim.git",
+		lazypath,
+	})
+	if vim.v.shell_error ~= 0 then
+		error("Unable to bootstrap lazy.nvim:\n" .. result)
 	end
-end, 100)
+end
+vim.opt.rtp:prepend(lazypath)
+
+require("core.theme")
+require("core.options")
+require("core.keymaps")
+require("core.autocmds")
+
+require("lazy").setup({
+	spec = {
+		{ import = "plugin_specs.ui" },
+		{ import = "plugin_specs.editor" },
+		{ import = "plugin_specs.tools" },
+		{ import = "plugin_specs.lang" },
+	},
+	defaults = { lazy = true },
+	install = { colorscheme = { "catppuccin", "gruvbox" } },
+	checker = { enabled = false },
+	change_detection = { notify = false },
+	performance = {
+		rtp = {
+			disabled_plugins = { "gzip", "netrwPlugin", "tarPlugin", "tohtml", "tutor", "zipPlugin" },
+		},
+	},
+})
+
+-- Preserve the old command and keymap workflow while lazy.nvim owns the backend.
+vim.api.nvim_create_user_command("PlugInstall", function()
+	require("lazy").sync()
+end, { desc = "Install/update plugins with lazy.nvim" })
 
 load_theme()

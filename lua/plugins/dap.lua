@@ -1,6 +1,3 @@
--- nvim-dap-ui v4+ needs nvim-nio; v3.9.3 does not (see init.lua plug pin).
-pcall(require, "nio")
-
 local dap = require("dap")
 local dapui = require("dapui")
 
